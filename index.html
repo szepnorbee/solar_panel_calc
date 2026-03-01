@@ -2,70 +2,85 @@
 <html lang="hu">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Napelem Árnyék Szimulátor és Kalkulátor v2</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Napelem Árnyék Szimulátor v2</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body {
             background-color: #f8fafc;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            -webkit-tap-highlight-color: transparent;
         }
         .card {
             background: white;
-            border-radius: 1rem;
+            border-radius: 0.75rem;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
         .input-field {
             width: 100%;
-            padding: 0.5rem;
+            padding: 0.5rem 0.4rem;
             border: 1px solid #cbd5e1;
             border-radius: 0.4rem;
-            font-size: 0.9rem;
+            font-size: 16px; /* 16px: iOS nem zoomol rá */
         }
+        /* Slider — nagyobb touch target */
         .slider {
             -webkit-appearance: none;
             width: 100%;
-            height: 6px;
-            border-radius: 3px;
+            height: 8px;
+            border-radius: 4px;
             background: #e2e8f0;
             outline: none;
+            padding: 0;
+            margin: 8px 0;
         }
         .slider::-webkit-slider-thumb {
             -webkit-appearance: none;
             appearance: none;
-            width: 18px;
-            height: 18px;
+            width: 28px;
+            height: 28px;
             border-radius: 50%;
             background: #3b82f6;
             cursor: pointer;
+            box-shadow: 0 2px 6px rgba(59,130,246,0.4);
         }
-        .warning-glow {
-            animation: glow 1.5s infinite;
+        .slider::-moz-range-thumb {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: #3b82f6;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 6px rgba(59,130,246,0.4);
         }
+        .warning-glow { animation: glow 1.5s infinite; }
         @keyframes glow {
-            0% { filter: drop-shadow(0 0 2px rgba(239, 68, 68, 0.5)); }
-            50% { filter: drop-shadow(0 0 10px rgba(239, 68, 68, 0.8)); }
-            100% { filter: drop-shadow(0 0 2px rgba(239, 68, 68, 0.5)); }
+            0%   { filter: drop-shadow(0 0 2px rgba(239,68,68,0.5)); }
+            50%  { filter: drop-shadow(0 0 10px rgba(239,68,68,0.8)); }
+            100% { filter: drop-shadow(0 0 2px rgba(239,68,68,0.5)); }
         }
         .spinner {
             display: inline-block;
-            width: 12px;
-            height: 12px;
+            width: 12px; height: 12px;
             border: 2px solid rgba(99,102,241,0.3);
             border-top-color: #6366f1;
             border-radius: 50%;
             animation: spin 0.6s linear infinite;
         }
         @keyframes spin { to { transform: rotate(360deg); } }
-        
-        /* Nyomtatási beállítások */
+
+        /* Collapsible szekciók mobilon */
+        .section-toggle { display: none; }
+        @media (max-width: 1023px) {
+            .section-toggle { display: flex; }
+            .section-body.collapsed { display: none; }
+        }
+
+        /* Nyomtatás */
         @media print {
-            @page {
-                size: A4 portrait;
-                margin: 12mm;
-            }
+            @page { size: A4 portrait; margin: 12mm; }
             body {
-                background-color: #ffffff !important;
+                background-color: #fff !important;
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
             }
@@ -75,10 +90,8 @@
                 break-inside: avoid;
                 padding: 0.75rem !important;
             }
-            .warning-glow {
-                animation: none !important;
-                filter: none !important;
-            }
+            .warning-glow { animation: none !important; filter: none !important; }
+            .no-print { display: none !important; }
             input[type="number"], input[type="text"], input[type="date"] {
                 border: none !important;
                 border-bottom: 1px dashed #94a3b8 !important;
@@ -93,75 +106,91 @@
         }
     </style>
 </head>
-<body class="p-4 md:p-6 print:p-0">
+<body class="p-2 sm:p-4 md:p-6 print:p-0">
     <div class="max-w-6xl mx-auto">
-        
+
         <!-- Fejléc -->
-        <header class="mb-8 print:mb-4 flex flex-col sm:flex-row justify-between items-center gap-4 border-b border-slate-200 pb-4 print:pb-2">
-            <div class="text-center sm:text-left">
-                <h1 class="text-3xl print:text-2xl font-extrabold text-slate-800">Napelem Árnyék és Termelés Szimulátor</h1>
-                <p class="text-slate-500 print:text-xs">v2 — Azimut-korrigált árnyék, felhőzeti index, rendszer-hatásfok</p>
+        <header class="mb-4 sm:mb-8 print:mb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-4 border-b border-slate-200 pb-3 print:pb-2">
+            <div>
+                <h1 class="text-xl sm:text-3xl print:text-2xl font-extrabold text-slate-800 leading-tight">☀️ Napelem Szimulátor</h1>
+                <p class="text-xs sm:text-sm text-slate-500 print:text-xs">Árnyék · Termelés · Azimut-korrekció · Felhőzeti modell</p>
             </div>
-            <button onclick="window.print()" class="print:hidden bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold py-2.5 px-5 rounded-lg shadow-md flex items-center transition shrink-0">
-                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
-                Jelentés Nyomtatása
+            <button onclick="window.print()" class="no-print print:hidden bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold py-2 px-4 rounded-lg shadow flex items-center transition shrink-0">
+                <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                Nyomtatás
             </button>
         </header>
 
         <!-- Fő elrendezés -->
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 print:flex print:flex-col print:gap-4">
-            
-            <!-- Beállítások panel -->
-            <div class="lg:col-span-4 space-y-6 print:space-y-0 print:grid print:grid-cols-2 print:gap-4">
-                <!-- Helyszín és Idő -->
-                <div class="card p-5 border-t-4 border-blue-500">
-                    <h2 class="text-md font-bold mb-4 flex items-center text-slate-700 uppercase tracking-wider print:mb-2 print:text-sm">
-                        <svg class="w-5 h-5 mr-2 print:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path></svg>
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-6 print:flex print:flex-col print:gap-4">
+
+            <!-- =============== BEÁLLÍTÁSOK PANEL =============== -->
+            <div class="lg:col-span-4 space-y-3 sm:space-y-6 print:space-y-0 print:grid print:grid-cols-2 print:gap-4">
+
+                <!-- Helyszín és Dátum -->
+                <div class="card border-t-4 border-blue-500 overflow-hidden">
+                    <button onclick="toggleSection('locSection')" class="section-toggle w-full p-4 text-left font-bold text-slate-700 uppercase tracking-wider text-sm items-center justify-between active:bg-slate-50">
+                        <span class="flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/></svg>
+                            Helyszín és Dátum
+                        </span>
+                        <svg id="locSectionChevron" class="w-5 h-5 text-slate-400 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    </button>
+                    <!-- Desktop: mindig látszik a cím -->
+                    <h2 class="hidden lg:flex text-md font-bold px-5 pt-5 pb-2 items-center text-slate-700 uppercase tracking-wider print:px-3 print:pt-3 print:text-sm">
+                        <svg class="w-5 h-5 mr-2 print:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/></svg>
                         Helyszín és Dátum
                     </h2>
-                    <div class="space-y-3 print:space-y-2">
+                    <div id="locSection" class="section-body p-4 pt-0 lg:px-5 lg:pb-5 space-y-3 print:space-y-2">
                         <div>
                             <label class="text-[10px] font-bold text-slate-400 uppercase">Település</label>
                             <div class="flex gap-2">
-                                <input type="text" id="cityName" value="Budapest" placeholder="pl. Debrecen" class="input-field flex-grow" onkeypress="if(event.key === 'Enter') geocodeCity()">
-                                <button id="searchCityBtn" onclick="geocodeCity()" class="print:hidden bg-blue-100 text-blue-700 px-3 py-1.5 rounded font-bold text-sm hover:bg-blue-200 transition shrink-0">Keresés</button>
+                                <input type="text" id="cityName" value="Budapest" placeholder="pl. Debrecen" class="input-field flex-grow" onkeypress="if(event.key==='Enter'){geocodeCity();this.blur();}">
+                                <button id="searchCityBtn" onclick="geocodeCity()" class="no-print bg-blue-100 text-blue-700 px-3 py-1.5 rounded font-bold text-sm hover:bg-blue-200 active:bg-blue-300 transition shrink-0">Keresés</button>
                             </div>
                         </div>
 
-                        <button onclick="getLocation()" class="print:hidden w-full bg-slate-800 hover:bg-black text-white text-xs font-bold py-2 rounded transition flex items-center justify-center">
-                            GPS KOORDINÁTÁK LEKÉRÉSE (Böngésző)
+                        <button onclick="getLocation()" class="no-print w-full bg-slate-800 hover:bg-black active:bg-slate-900 text-white text-xs font-bold py-2.5 rounded transition flex items-center justify-center">
+                            📍 GPS HELYMEGHATÁROZÁS
                         </button>
 
-                        <div class="grid grid-cols-2 gap-2 opacity-70 hover:opacity-100 transition-opacity">
+                        <div class="grid grid-cols-2 gap-2">
                             <div>
                                 <label class="text-[10px] font-bold text-slate-400 uppercase">Szélesség (°)</label>
-                                <input type="number" id="latitude" value="47.49" step="0.01" class="input-field bg-slate-50 text-sm">
+                                <input type="number" id="latitude" value="47.49" step="0.01" class="input-field bg-slate-50">
                             </div>
                             <div>
                                 <label class="text-[10px] font-bold text-slate-400 uppercase">Hosszúság (°)</label>
-                                <input type="number" id="longitude" value="19.04" step="0.01" class="input-field bg-slate-50 text-sm">
+                                <input type="number" id="longitude" value="19.04" step="0.01" class="input-field bg-slate-50">
                             </div>
                         </div>
-                        
+
                         <div>
                             <label class="text-[10px] font-bold text-slate-400 uppercase">Szimuláció dátuma</label>
                             <input type="date" id="calcDate" class="input-field">
                         </div>
 
-                        <div class="flex items-center gap-2 bg-sky-50 border border-sky-200 rounded-lg px-3 py-2">
-                            <input type="checkbox" id="dstCheckbox" class="w-4 h-4 accent-sky-600 cursor-pointer">
-                            <label for="dstCheckbox" class="text-xs font-bold text-sky-800 cursor-pointer select-none">Nyári időszámítás aktív (CEST / UTC+2)</label>
-                        </div>
+                        <label class="flex items-center gap-2 bg-sky-50 border border-sky-200 rounded-lg px-3 py-2.5 cursor-pointer active:bg-sky-100">
+                            <input type="checkbox" id="dstCheckbox" class="w-5 h-5 accent-sky-600 cursor-pointer shrink-0">
+                            <span class="text-xs font-bold text-sky-800 select-none">Nyári időszámítás (CEST / UTC+2)</span>
+                        </label>
                     </div>
                 </div>
 
-                <!-- Panel és Telepítés -->
-                <div class="card p-5 border-t-4 border-orange-500">
-                    <h2 class="text-md font-bold mb-4 flex items-center text-slate-700 uppercase tracking-wider print:mb-2 print:text-sm">
-                        <svg class="w-5 h-5 mr-2 print:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                <!-- Méretek és Rendszer -->
+                <div class="card border-t-4 border-orange-500 overflow-hidden">
+                    <button onclick="toggleSection('sysSection')" class="section-toggle w-full p-4 text-left font-bold text-slate-700 uppercase tracking-wider text-sm items-center justify-between active:bg-slate-50">
+                        <span class="flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                            Méretek és Rendszer
+                        </span>
+                        <svg id="sysSectionChevron" class="w-5 h-5 text-slate-400 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    </button>
+                    <h2 class="hidden lg:flex text-md font-bold px-5 pt-5 pb-2 items-center text-slate-700 uppercase tracking-wider print:px-3 print:pt-3 print:text-sm">
+                        <svg class="w-5 h-5 mr-2 print:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
                         Méretek és Rendszer
                     </h2>
-                    <div class="space-y-4 print:space-y-2">
+                    <div id="sysSection" class="section-body p-4 pt-0 lg:px-5 lg:pb-5 space-y-4 print:space-y-2">
                         <div class="grid grid-cols-2 gap-2">
                             <div>
                                 <label class="text-[10px] font-bold text-slate-400 uppercase">Panel hossz (mm)</label>
@@ -169,24 +198,27 @@
                             </div>
                             <div>
                                 <label class="text-[10px] font-bold text-amber-600 uppercase">Teljesítmény (Wp)</label>
-                                <input type="number" id="panelPower" value="450" class="input-field border-amber-300 bg-amber-50 font-bold text-amber-900" title="Wp/panel">
+                                <input type="number" id="panelPower" value="450" class="input-field border-amber-300 bg-amber-50 font-bold text-amber-900">
                             </div>
                         </div>
-                        <div class="print:mb-1">
+
+                        <!-- Dőlésszög -->
+                        <div>
                             <div class="flex justify-between items-center mb-1">
-                                <label class="text-[10px] font-bold text-slate-400 uppercase">Dőlésszög: <span id="tiltVal" class="text-orange-600">35</span>°</label>
-                                <button id="idealTiltBtn" onclick="setIdealTilt()" class="print:hidden text-[9px] bg-orange-100 text-orange-700 hover:bg-orange-200 px-2 py-0.5 rounded font-bold transition cursor-pointer shadow-sm" title="Éves optimum dőlésszög (árnyékolással együtt)">
+                                <label class="text-xs font-bold text-slate-500">Dőlésszög: <span id="tiltVal" class="text-orange-600 text-base">35</span>°</label>
+                                <button id="idealTiltBtn" onclick="setIdealTilt()" class="no-print text-[10px] bg-orange-100 text-orange-700 hover:bg-orange-200 active:bg-orange-300 px-2.5 py-1 rounded font-bold transition cursor-pointer shadow-sm">
                                     <span id="idealBtnDefault">Éves opt.: <span id="idealTiltDisplay">--</span>°</span>
-                                    <span id="idealBtnSuccess" class="hidden">BEÁLLÍTVA!</span>
+                                    <span id="idealBtnSuccess" class="hidden">✓ BEÁLLÍTVA</span>
                                 </button>
                                 <span class="hidden print:inline text-[9px] bg-orange-100 text-orange-700 px-1 py-0.5 rounded font-bold">Éves opt.: <span id="printIdealTiltDisplay">--</span>°</span>
                             </div>
-                            <input type="range" id="tiltAngle" min="0" max="90" value="35" class="slider print:hidden">
+                            <input type="range" id="tiltAngle" min="0" max="90" value="35" class="slider no-print">
                         </div>
-                        <div class="pt-2 border-t border-slate-100 print:pt-1">
+
+                        <div class="pt-2 border-t border-slate-100">
                             <div class="grid grid-cols-2 gap-2">
                                 <div>
-                                    <label class="text-[10px] font-bold text-slate-500 uppercase">Sortáv. (mm)</label>
+                                    <label class="text-[10px] font-bold text-slate-500 uppercase">Sortávolság (mm)</label>
                                     <input type="number" id="installedDist" value="4500" class="input-field border-orange-200 bg-orange-50 font-bold">
                                 </div>
                                 <div>
@@ -195,132 +227,136 @@
                                 </div>
                             </div>
                         </div>
-                        <!-- Performance Ratio -->
-                        <div class="pt-2 border-t border-slate-100 print:pt-1">
-                            <label class="text-[10px] font-bold text-slate-500 uppercase">
-                                Rendszer hatásfok (PR): <span id="prVal" class="text-emerald-600">0.82</span>
+
+                        <!-- PR -->
+                        <div class="pt-2 border-t border-slate-100">
+                            <label class="text-xs font-bold text-slate-500">
+                                Rendszer hatásfok: <span id="prVal" class="text-emerald-600 text-base">0.82</span>
                             </label>
-                            <input type="range" id="performanceRatio" min="50" max="100" value="82" class="slider print:hidden">
-                            <p class="text-[9px] text-slate-400 mt-1">Inverter, kábel, hőm., szennyeződés veszteségei</p>
+                            <input type="range" id="performanceRatio" min="50" max="100" value="82" class="slider no-print">
+                            <p class="text-[9px] text-slate-400 mt-0.5">Inverter + kábel + hőmérséklet + szennyeződés</p>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Vizualizáció és Eredmények -->
-            <div class="lg:col-span-8 space-y-6 print:space-y-4">
-                
-                <!-- Szimulációs Vezérlő -->
-                <div class="card p-6">
-                    <div class="flex justify-between items-end mb-4 border-b border-slate-100 pb-2 print:mb-2 print:pb-1">
+            <!-- =============== VIZUALIZÁCIÓ ÉS EREDMÉNYEK =============== -->
+            <div class="lg:col-span-8 space-y-3 sm:space-y-6 print:space-y-4">
+
+                <!-- Szimulációs kártya -->
+                <div class="card p-3 sm:p-6">
+                    <!-- Fejléc: mobilon stack, desktopon egymás mellett -->
+                    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-end mb-3 border-b border-slate-100 pb-2 print:mb-2 print:pb-1 gap-1">
                         <div>
-                            <h2 class="text-xl print:text-lg font-bold text-slate-800">Szimulált állapot (Adott időpontban)</h2>
-                            <p class="text-sm font-bold text-blue-600" id="currentDateDisplay"></p>
+                            <h2 class="text-base sm:text-xl print:text-lg font-bold text-slate-800">Szimulált állapot</h2>
+                            <p class="text-xs sm:text-sm font-bold text-blue-600" id="currentDateDisplay"></p>
                         </div>
-                        <div class="text-right">
-                            <div class="text-3xl print:text-xl font-mono font-black text-blue-600" id="timeDisplay">12:00</div>
-                            <div class="text-[10px] font-bold text-amber-600 mt-1" title="Valós Szoláris Idő">SZOLÁRIS IDŐ: <span id="solarTimeDisplay">12:00</span></div>
-                            <div class="text-xs font-bold text-slate-400 mt-1">NAPMAGASSÁG: <span id="sunAltDisplay">0</span>° | AZIMUT: <span id="sunAziDisplay">0</span>°</div>
+                        <div class="flex sm:flex-col items-center sm:items-end gap-2 sm:gap-0">
+                            <div class="text-2xl sm:text-3xl print:text-xl font-mono font-black text-blue-600" id="timeDisplay">12:00</div>
+                            <div class="flex flex-col sm:items-end">
+                                <div class="text-[10px] font-bold text-amber-600" title="Valós Szoláris Idő">SOLAR: <span id="solarTimeDisplay">12:00</span></div>
+                                <div class="text-[10px] font-bold text-slate-400">ALT: <span id="sunAltDisplay">0</span>° AZ: <span id="sunAziDisplay">0</span>°</div>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="mb-8 print:hidden">
+                    <!-- Idő slider -->
+                    <div class="mb-4 sm:mb-8 no-print">
                         <input type="range" id="timeSlider" min="0" max="1439" value="720" class="slider">
-                        <div class="flex justify-between text-[10px] font-bold text-slate-400 mt-2 uppercase">
-                            <span>Éjfél</span>
-                            <span>Dél</span>
-                            <span>Éjfél</span>
+                        <div class="flex justify-between text-[10px] font-bold text-slate-400 mt-1 uppercase">
+                            <span>00:00</span>
+                            <span>12:00</span>
+                            <span>24:00</span>
                         </div>
                     </div>
 
-                    <!-- SVG Canvas -->
-                    <div class="w-full h-80 print:h-56 bg-slate-50 rounded-xl border border-slate-200 relative overflow-hidden">
+                    <!-- SVG Canvas — alacsonyabb mobilon -->
+                    <div class="w-full h-48 sm:h-80 print:h-56 bg-slate-50 rounded-xl border border-slate-200 relative overflow-hidden">
                         <svg id="viz" width="100%" height="100%" viewBox="0 0 1000 300" preserveAspectRatio="xMidYMid meet">
-                            <rect x="0" y="220" width="1000" height="80" fill="#f1f5f9" />
-                            <line x1="0" y1="220" x2="1000" y2="220" stroke="#cbd5e1" stroke-width="2" />
-                            <rect id="sky" x="0" y="0" width="1000" height="220" fill="#f8fafc" />
-                            <polygon id="shadowPoly" points="0,0 0,0 0,0" fill="#334155" opacity="0.25" />
-                            <line id="p1" x1="200" y1="220" x2="300" y2="160" stroke="#1e40af" stroke-width="10" stroke-linecap="round" />
-                            <line id="p2" x1="600" y1="220" x2="700" y2="160" stroke="#1e40af" stroke-width="10" stroke-linecap="round" />
+                            <rect x="0" y="220" width="1000" height="80" fill="#f1f5f9"/>
+                            <line x1="0" y1="220" x2="1000" y2="220" stroke="#cbd5e1" stroke-width="2"/>
+                            <rect id="sky" x="0" y="0" width="1000" height="220" fill="#f8fafc"/>
+                            <polygon id="shadowPoly" points="0,0 0,0 0,0" fill="#334155" opacity="0.25"/>
+                            <line id="p1" x1="200" y1="220" x2="300" y2="160" stroke="#1e40af" stroke-width="10" stroke-linecap="round"/>
+                            <line id="p2" x1="600" y1="220" x2="700" y2="160" stroke="#1e40af" stroke-width="10" stroke-linecap="round"/>
                             <g id="distLabelGroup">
-                                <line id="distLine" x1="200" y1="260" x2="600" y2="260" stroke="#94a3b8" stroke-width="1" stroke-dasharray="4" />
+                                <line id="distLine" x1="200" y1="260" x2="600" y2="260" stroke="#94a3b8" stroke-width="1" stroke-dasharray="4"/>
                                 <text id="distText" x="400" y="255" text-anchor="middle" font-size="11" font-weight="bold" fill="#64748b">D = 4500 mm</text>
                             </g>
-                            <line id="sunRay" x1="0" y1="0" x2="0" y2="0" stroke="#fbbf24" stroke-width="1" stroke-dasharray="10,5" />
+                            <line id="sunRay" x1="0" y1="0" x2="0" y2="0" stroke="#fbbf24" stroke-width="1" stroke-dasharray="10,5"/>
                             <g id="sunGroup">
-                                <circle cx="0" cy="0" r="15" fill="#fbbf24" />
+                                <circle cx="0" cy="0" r="15" fill="#fbbf24"/>
                                 <circle cx="0" cy="0" r="22" fill="#fbbf24" opacity="0.2">
-                                    <animate attributeName="r" values="20;25;20" dur="3s" repeatCount="indefinite" />
+                                    <animate attributeName="r" values="20;25;20" dur="3s" repeatCount="indefinite"/>
                                 </circle>
                             </g>
                             <g id="areaGroup">
-                                <line id="areaBoundary" x1="0" y1="120" x2="0" y2="260" stroke="#3b82f6" stroke-width="2" stroke-dasharray="5,5" />
-                                <rect id="overhangHighlight" x="0" y="215" width="0" height="10" fill="#ef4444" opacity="0.5" />
+                                <line id="areaBoundary" x1="0" y1="120" x2="0" y2="260" stroke="#3b82f6" stroke-width="2" stroke-dasharray="5,5"/>
+                                <rect id="overhangHighlight" x="0" y="215" width="0" height="10" fill="#ef4444" opacity="0.5"/>
                                 <text id="areaText" x="0" y="110" text-anchor="middle" font-size="10" font-weight="bold" fill="#3b82f6">Terület vége</text>
                             </g>
                             <text x="200" y="238" text-anchor="middle" font-size="10" font-weight="bold" fill="#94a3b8">1. SOR</text>
                             <text id="p2Label" x="600" y="238" text-anchor="middle" font-size="10" font-weight="bold" fill="#94a3b8">2. SOR</text>
                         </svg>
-
                         <div id="nightOverlay" class="absolute inset-0 bg-slate-900/60 hidden flex items-center justify-center pointer-events-none">
-                            <span class="bg-black/50 text-white px-6 py-2 rounded-full text-xs font-bold border border-white/20">A NAP A HORIZONT ALATT VAN</span>
+                            <span class="bg-black/50 text-white px-4 py-1.5 rounded-full text-[11px] font-bold border border-white/20">A NAP A HORIZONT ALATT VAN</span>
                         </div>
-                        <div id="shadowWarning" class="absolute top-4 right-4 bg-red-600 text-white px-4 py-2 rounded-lg text-xs font-bold hidden warning-glow">
-                            ⚠️ ÁRNYÉKOLÁS TÖRTÉNIK!
+                        <div id="shadowWarning" class="absolute top-2 right-2 sm:top-4 sm:right-4 bg-red-600 text-white px-3 py-1.5 rounded-lg text-[11px] font-bold hidden warning-glow">
+                            ⚠️ ÁRNYÉKOLÁS!
                         </div>
                     </div>
                 </div>
 
-                <!-- Eredmények -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 print:grid-cols-4 print:gap-2">
-                    
-                    <div class="card p-4 bg-white border-b-4 border-slate-200">
-                        <span class="text-[10px] print:text-[8px] font-bold text-slate-400 uppercase">Téli javaslat (Dec 21)</span>
-                        <p class="text-xl print:text-lg font-black text-slate-800" id="recD">---</p>
-                        <p class="text-[10px] print:text-[8px] text-slate-500">Ideális minimum táv.</p>
+                <!-- Eredmény kártyák — 2 oszlop mobilon, 4 desktopon -->
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4 print:grid-cols-4 print:gap-2">
+
+                    <div class="card p-3 sm:p-4 bg-white border-b-4 border-slate-200">
+                        <span class="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase leading-tight block">Téli jav. (Dec&nbsp;21)</span>
+                        <p class="text-lg sm:text-xl font-black text-slate-800 mt-0.5" id="recD">---</p>
+                        <p class="text-[9px] sm:text-[10px] text-slate-500">Min. sortávolság</p>
                     </div>
-                    
-                    <div class="card p-4 bg-white border-b-4 border-slate-200">
-                        <span class="text-[10px] print:text-[8px] font-bold text-slate-400 uppercase">Aktuális árnyék (É-D)</span>
-                        <p class="text-xl print:text-lg font-black text-slate-800" id="currS">---</p>
-                        <p class="text-[10px] print:text-[8px] text-slate-500">É-D vetület (azimut-korr.)</p>
+
+                    <div class="card p-3 sm:p-4 bg-white border-b-4 border-slate-200">
+                        <span class="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase leading-tight block">Aktuális árnyék</span>
+                        <p class="text-lg sm:text-xl font-black text-slate-800 mt-0.5" id="currS">---</p>
+                        <p class="text-[9px] sm:text-[10px] text-slate-500">É-D vetület</p>
                     </div>
-                    
-                    <div class="card p-4 bg-white border-b-4 border-slate-200" id="areaCard">
-                        <span class="text-[10px] print:text-[8px] font-bold text-slate-400 uppercase">Helyigény</span>
-                        <p class="text-xl print:text-lg font-black text-slate-800" id="totalSpace">---</p>
-                        <p class="text-[10px] print:text-[8px] font-bold text-slate-500 mt-1" id="overhangText">Túllógás: ---</p>
+
+                    <div class="card p-3 sm:p-4 bg-white border-b-4 border-slate-200" id="areaCard">
+                        <span class="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase leading-tight block">Helyigény</span>
+                        <p class="text-lg sm:text-xl font-black text-slate-800 mt-0.5" id="totalSpace">---</p>
+                        <p class="text-[9px] sm:text-[10px] font-bold text-slate-500 mt-0.5" id="overhangText">---</p>
                     </div>
-                    
-                    <div class="card p-4 bg-white border-b-4 border-slate-200" id="statusCard">
-                        <span class="text-[10px] print:text-[8px] font-bold text-slate-400 uppercase">Állapot</span>
-                        <p class="text-xl print:text-lg font-black text-emerald-600" id="statusMsg">Biztonságos</p>
-                        <p class="text-[10px] print:text-[8px] text-slate-500" id="statusDesc">Nincs árnyékvetés.</p>
+
+                    <div class="card p-3 sm:p-4 bg-white border-b-4 border-slate-200" id="statusCard">
+                        <span class="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase leading-tight block">Állapot</span>
+                        <p class="text-lg sm:text-xl font-black text-emerald-600 mt-0.5" id="statusMsg">Biztonságos</p>
+                        <p class="text-[9px] sm:text-[10px] text-slate-500" id="statusDesc">Nincs árnyékvetés.</p>
                     </div>
-                    
+
                     <!-- Napi Termelés -->
-                    <div class="card p-4 bg-amber-50 border-b-4 border-amber-400 relative overflow-hidden flex flex-col justify-center sm:col-span-2 lg:col-span-2 print:col-span-2">
-                        <span class="text-[10px] print:text-[8px] font-bold text-amber-700 uppercase">Napi Termelés (2 Sor) — Felhős modell</span>
-                        <p class="text-2xl print:text-xl font-black text-amber-900" id="totalEnergy">--- kWh</p>
-                        <div class="mt-1 text-[10px] print:text-[8px] font-bold text-amber-800 w-full z-10 relative">
-                            <div class="flex justify-between border-b border-amber-200/50 py-0.5"><span>1. Sor (tiszta):</span> <span id="p1Energy">--- kWh</span></div>
-                            <div class="flex justify-between border-b border-amber-200/50 py-0.5"><span>2. Sor (árnyékolt):</span> <span id="p2Energy">--- kWh</span></div>
-                            <div class="flex justify-between py-0.5 text-amber-500"><span>Felhőzeti index (Kt):</span> <span id="dailyKt">---</span></div>
+                    <div class="card p-3 sm:p-4 bg-amber-50 border-b-4 border-amber-400 relative overflow-hidden col-span-2 print:col-span-2">
+                        <span class="text-[9px] sm:text-[10px] font-bold text-amber-700 uppercase">Napi Termelés (2 Sor)</span>
+                        <p class="text-xl sm:text-2xl font-black text-amber-900 mt-0.5" id="totalEnergy">--- kWh</p>
+                        <div class="mt-1 text-[10px] font-bold text-amber-800 w-full z-10 relative">
+                            <div class="flex justify-between border-b border-amber-200/50 py-0.5"><span>1. Sor:</span> <span id="p1Energy">---</span></div>
+                            <div class="flex justify-between border-b border-amber-200/50 py-0.5"><span>2. Sor:</span> <span id="p2Energy">---</span></div>
+                            <div class="flex justify-between py-0.5 text-amber-500"><span>Kt:</span> <span id="dailyKt">---</span></div>
                         </div>
-                        <p class="text-[10px] print:text-[8px] font-bold mt-1 pt-1 border-t border-amber-200/80" id="lossText">Napi veszteség: 0%</p>
-                        <svg class="absolute -right-4 -bottom-4 w-16 h-16 text-amber-200 opacity-30 pointer-events-none" fill="currentColor" viewBox="0 0 20 20"><path d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z"></path></svg>
+                        <p class="text-[10px] font-bold mt-1 pt-1 border-t border-amber-200/80" id="lossText">Veszteség: 0%</p>
+                        <svg class="absolute -right-3 -bottom-3 w-12 h-12 sm:w-16 sm:h-16 text-amber-200 opacity-30 pointer-events-none" fill="currentColor" viewBox="0 0 20 20"><path d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z"/></svg>
                     </div>
 
                     <!-- Éves Termelés -->
-                    <div class="card p-4 bg-indigo-50 border-b-4 border-indigo-400 relative overflow-hidden flex flex-col justify-center sm:col-span-2 lg:col-span-2 print:col-span-2">
-                        <span class="text-[10px] print:text-[8px] font-bold text-indigo-700 uppercase">Éves Termelés (2 Sor) — <span id="annualCalcStatus">számolás...</span></span>
-                        <p class="text-2xl print:text-xl font-black text-indigo-900" id="annualTotalEnergy">--- kWh</p>
-                        <div class="mt-1 text-[10px] print:text-[8px] font-bold text-indigo-800 w-full z-10 relative">
-                            <div class="flex justify-between border-b border-indigo-200/50 py-0.5"><span>1. Sor (tiszta):</span> <span id="annualP1Energy">--- kWh</span></div>
-                            <div class="flex justify-between py-0.5"><span>2. Sor (árnyékolt):</span> <span id="annualP2Energy">--- kWh</span></div>
+                    <div class="card p-3 sm:p-4 bg-indigo-50 border-b-4 border-indigo-400 relative overflow-hidden col-span-2 print:col-span-2">
+                        <span class="text-[9px] sm:text-[10px] font-bold text-indigo-700 uppercase">Éves Termelés — <span id="annualCalcStatus">számolás...</span></span>
+                        <p class="text-xl sm:text-2xl font-black text-indigo-900 mt-0.5" id="annualTotalEnergy">--- kWh</p>
+                        <div class="mt-1 text-[10px] font-bold text-indigo-800 w-full z-10 relative">
+                            <div class="flex justify-between border-b border-indigo-200/50 py-0.5"><span>1. Sor:</span> <span id="annualP1Energy">---</span></div>
+                            <div class="flex justify-between py-0.5"><span>2. Sor:</span> <span id="annualP2Energy">---</span></div>
                         </div>
-                        <p class="text-[10px] print:text-[8px] font-bold mt-1 pt-1 border-t border-indigo-200/80" id="annualLossText">Éves veszteség: 0%</p>
-                        <svg class="absolute -right-4 -bottom-4 w-16 h-16 text-indigo-200 opacity-30 pointer-events-none" fill="currentColor" viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20a2 2 0 002 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z"></path></svg>
+                        <p class="text-[10px] font-bold mt-1 pt-1 border-t border-indigo-200/80" id="annualLossText">Veszteség: 0%</p>
+                        <svg class="absolute -right-3 -bottom-3 w-12 h-12 sm:w-16 sm:h-16 text-indigo-200 opacity-30 pointer-events-none" fill="currentColor" viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20a2 2 0 002 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z"/></svg>
                     </div>
                 </div>
             </div>
@@ -329,250 +365,160 @@
 
     <script>
         // ========================================================================
-        //  KONSTANSOK ÉS ÁLLAPOT
+        //  KONSTANSOK
         // ========================================================================
-
         const DEG2RAD = Math.PI / 180;
         const RAD2DEG = 180 / Math.PI;
 
-        // Havi átlagos felhőzeti index (clearness index, Kt) — Közép-Európa (Budapest kb.)
-        // Forrás: PVGIS / Meteonorm átlagok alapján becsülve
-        const MONTHLY_KT = [
-            0.33,  // Január
-            0.38,  // Február
-            0.44,  // Március
-            0.48,  // Április
-            0.51,  // Május
-            0.53,  // Június
-            0.55,  // Július
-            0.53,  // Augusztus
-            0.48,  // Szeptember
-            0.40,  // Október
-            0.33,  // November
-            0.30   // December
-        ];
-
-        const inputs = ['cityName', 'latitude', 'longitude', 'calcDate', 'panelLength',
-                         'panelPower', 'tiltAngle', 'installedDist', 'areaLength',
-                         'timeSlider', 'performanceRatio', 'dstCheckbox'];
+        // Havi clearness index — Közép-Európa (Budapest)
+        const MONTHLY_KT = [0.33, 0.38, 0.44, 0.48, 0.51, 0.53, 0.55, 0.53, 0.48, 0.40, 0.33, 0.30];
 
         document.getElementById('calcDate').valueAsDate = new Date();
 
-        // Auto-detect DST
+        // DST auto-detect
         const now = new Date();
         const jan = new Date(now.getFullYear(), 0, 1);
         const jul = new Date(now.getFullYear(), 6, 1);
-        const isDSTNow = now.getTimezoneOffset() < Math.max(jan.getTimezoneOffset(), jul.getTimezoneOffset());
-        document.getElementById('dstCheckbox').checked = isDSTNow;
+        document.getElementById('dstCheckbox').checked = now.getTimezoneOffset() < Math.max(jan.getTimezoneOffset(), jul.getTimezoneOffset());
 
         let annualCalcTimeout = null;
-        let annualWorkerAbort = false;
 
         // ========================================================================
-        //  NAPSZÁMÍTÁS — JAVÍTOTT, AZIMUT-KORRIGÁLT
+        //  ÖSSZECSUKHATÓ SZEKCIÓK (mobil)
         // ========================================================================
+        window.toggleSection = function(id) {
+            const el = document.getElementById(id);
+            el.classList.toggle('collapsed');
+            const chevron = document.getElementById(id + 'Chevron');
+            if (chevron) {
+                chevron.style.transform = el.classList.contains('collapsed') ? 'rotate(-90deg)' : '';
+            }
+        };
 
-        /**
-         * Teljes nappozíció számítás.
-         * Visszaad: { alphaDeg, azimuthDeg, intensityFactor, isShadowed, shadowNS }
-         * 
-         * shadowNS: az árnyék észak-déli vetülete (mm) — CSAK ez számít a sorok közti árnyékolásra.
-         * Az azimut = 0° Dél, pozitív = Nyugat, negatív = Kelet.
-         */
+        // ========================================================================
+        //  NAPSZÁMÍTÁS
+        // ========================================================================
         function calculateSunPosition(lat, lon, date, minutesLocalClock, betaRad, P, H, installedD, isDST) {
             const phi = lat * DEG2RAD;
             const dayOfYear = Math.floor((date - new Date(date.getFullYear(), 0, 0)) / 86400000);
             const delta = 23.45 * Math.sin((360 / 365) * (dayOfYear + 284) * DEG2RAD) * DEG2RAD;
-            
-            // --- Idő korrekció (Equation of Time) ---
+
             const B = (dayOfYear - 1) * (360 / 365) * DEG2RAD;
             const EoT = 229.18 * (0.000075 + 0.001868 * Math.cos(B) - 0.032077 * Math.sin(B)
                                  - 0.014615 * Math.cos(2 * B) - 0.040849 * Math.sin(2 * B));
-            
-            // Időzóna: DST kezelés
-            const standardOffset = Math.round(lon / 15);  // Budapest → 1
+
+            const standardOffset = Math.round(lon / 15);
             const tzOffset = isDST ? standardOffset + 1 : standardOffset;
             const LSTM = 15 * tzOffset;
-            const TC = 4 * (lon - LSTM) + EoT; // perc
-            
+            const TC = 4 * (lon - LSTM) + EoT;
+
             const solarMinutes = minutesLocalClock + TC;
             const hourAngle = ((solarMinutes / 4) - 180) * DEG2RAD;
 
-            // --- Napmagasság (α) ---
             const sinAlpha = Math.sin(phi) * Math.sin(delta) + Math.cos(phi) * Math.cos(delta) * Math.cos(hourAngle);
             const alphaRad = Math.asin(Math.max(-1, Math.min(1, sinAlpha)));
             const alphaDeg = alphaRad * RAD2DEG;
 
-            // --- Azimut (γs) — Dél = 0°, Ny = +, K = - ---
             let azimuthDeg = 0;
-            let azimuthRad = 0;
             if (alphaDeg > 0.5) {
-                const cosGammaS = (sinAlpha * Math.sin(phi) - Math.sin(delta)) 
+                const cosGammaS = (sinAlpha * Math.sin(phi) - Math.sin(delta))
                                 / (Math.cos(alphaRad) * Math.cos(phi));
                 const clampedCos = Math.max(-1, Math.min(1, cosGammaS));
-                azimuthRad = Math.acos(clampedCos);
-                // Előjel: ha hourAngle > 0 → délután → azimut pozitív (nyugat)
-                if (hourAngle > 0) azimuthRad = -azimuthRad; // Kelet-Nyugat iránytól flip
-                // Konvenció: Dél = 0, Ny = +, K = -
-                if (hourAngle > 0) azimuthDeg = Math.acos(clampedCos) * RAD2DEG;
-                else azimuthDeg = -Math.acos(clampedCos) * RAD2DEG;
+                azimuthDeg = hourAngle > 0
+                    ? Math.acos(clampedCos) * RAD2DEG
+                    : -Math.acos(clampedCos) * RAD2DEG;
             }
 
-            let intensityFactor = 0;
-            let isShadowed = false;
-            let shadowNS = 0; // észak-déli árnyék vetület
+            let intensityFactor = 0, isShadowed = false, shadowNS = 0;
 
             if (alphaDeg > 0) {
-                // === JAVÍTOTT: Árnyék É-D vetülete azimut alapján ===
-                // A teljes árnyékhossz vízszintesen: H / tan(α)
-                // Ennek É-D komponense (ami a sorok közti árnyékolást okozza):
-                // shadowNS = H * cos(azimuth) / tan(α)
-                // Ahol azimuth Dél=0, tehát cos(0)=1 délben → max árnyék É-D irányban.
-                // Reggel/délután cos(azimuth) < 1, tehát az árnyék oldalra esik, nem éri a hátsó sort.
-                
                 const cosAz = Math.cos(azimuthDeg * DEG2RAD);
                 if (cosAz > 0) {
-                    // Csak ha a nap délről süt (Északi féltekén a panel déli irányba néz)
                     shadowNS = H * cosAz / Math.tan(alphaRad);
-                    if ((P + shadowNS) > installedD) {
-                        isShadowed = true;
-                    }
+                    if ((P + shadowNS) > installedD) isShadowed = true;
                 }
-                // Ha cosAz <= 0: a nap hátulról süt → nincs árnyékolás a 2. sorra
 
-                // --- Beesési szög (cosTheta) a déli tájolású panelra ---
-                const cosTheta = Math.sin(alphaRad) * Math.cos(betaRad) 
+                const cosTheta = Math.sin(alphaRad) * Math.cos(betaRad)
                                + Math.cos(alphaRad) * Math.sin(betaRad) * Math.max(0, cosAz);
-                // cosAz clamp ≥ 0: ha a nap hátulról süt, a panel nem kap direkt sugárzást
 
                 if (cosTheta > 0) {
-                    // Légköri csillapítás (Kasten & Young AM modell)
                     const AM = 1 / (Math.sin(alphaRad) + 0.50572 * Math.pow(96.07995 - alphaDeg, -1.6364));
-                    // Clear-sky direkt normál besugárzás (egyszerűsített Hottel modell)
-                    const DNI_factor = 1.1 * Math.pow(0.7, Math.pow(AM, 0.678));
-                    intensityFactor = cosTheta * DNI_factor;
+                    intensityFactor = cosTheta * 1.1 * Math.pow(0.7, Math.pow(AM, 0.678));
                 }
-                
-                // --- Diffúz sugárzási komponens (izotrop modell) ---
-                // A panel által „látott" égbolt arány: (1 + cos(β)) / 2
-                // Diffúz intenzitás: kb 0.1 * sin(α) (nagyon egyszerűsített)
-                if (alphaDeg > 0) {
-                    const skyViewFactor = (1 + Math.cos(betaRad)) / 2;
-                    const diffuseFactor = 0.10 * sinAlpha * skyViewFactor;
-                    intensityFactor += diffuseFactor;
-                }
+
+                const skyViewFactor = (1 + Math.cos(betaRad)) / 2;
+                intensityFactor += 0.10 * sinAlpha * skyViewFactor;
             }
 
-            return { 
-                alphaDeg, azimuthDeg, intensityFactor, isShadowed, shadowNS,
-                solarMinutes
-            };
+            return { alphaDeg, azimuthDeg, intensityFactor, isShadowed, shadowNS, solarMinutes };
         }
 
         // ========================================================================
-        //  NAPI ENERGIA SZÁMÍTÁS (5 perces iteráció)
+        //  NAPI ENERGIA
         // ========================================================================
-
         function calculateDailyEnergy(lat, lon, date, panelPower, beta, L, installedD, PR, isDST, useKt) {
-            let row1Wh = 0;  // 1. sor: sosem árnyékolt
-            let row2Wh = 0;  // 2. sor: lehet árnyékolt
+            let row1Wh = 0, row2Wh = 0;
             const betaRad = beta * DEG2RAD;
             const P = L * Math.cos(betaRad);
             const H = L * Math.sin(betaRad);
-
-            // Felhőzeti index (Kt) az adott hónapra
-            const monthIdx = date.getMonth();
-            const Kt = useKt ? MONTHLY_KT[monthIdx] : 1.0;
+            const Kt = useKt ? MONTHLY_KT[date.getMonth()] : 1.0;
 
             for (let m = 0; m < 1440; m += 5) {
                 const step = calculateSunPosition(lat, lon, date, m, betaRad, P, H, installedD, isDST);
                 if (step.alphaDeg > 0 && step.intensityFactor > 0) {
-                    // Teljesítmény = Wp * intenzitás * PR * Kt
                     const power = panelPower * step.intensityFactor * PR * Kt;
-                    
-                    // 1. sor: mindig teljes
                     row1Wh += power * (5 / 60);
-                    
-                    // 2. sor: árnyékolt → csak diffúz (kb 15% marad)
-                    if (step.isShadowed) {
-                        row2Wh += power * 0.15 * (5 / 60);
-                    } else {
-                        row2Wh += power * (5 / 60);
-                    }
+                    row2Wh += (step.isShadowed ? power * 0.15 : power) * (5 / 60);
                 }
             }
             return { row1Wh, row2Wh };
         }
 
         // ========================================================================
-        //  ÉVES ENERGIA SZÁMÍTÁS (debounced)
+        //  ÉVES ENERGIA
         // ========================================================================
-
         function calculateAnnualEnergy(lat, lon, panelPower, beta, L, installedD, PR, isDST) {
-            let annualRow1Wh = 0;
-            let annualRow2Wh = 0;
-            const currentYear = new Date().getFullYear();
-            
+            let annualRow1Wh = 0, annualRow2Wh = 0;
+            const year = new Date().getFullYear();
             for (let day = 1; day <= 365; day++) {
-                const date = new Date(currentYear, 0, day);
-                const daily = calculateDailyEnergy(lat, lon, date, panelPower, beta, L, installedD, PR, isDST, true);
-                annualRow1Wh += daily.row1Wh;
-                annualRow2Wh += daily.row2Wh;
+                const date = new Date(year, 0, day);
+                const d = calculateDailyEnergy(lat, lon, date, panelPower, beta, L, installedD, PR, isDST, true);
+                annualRow1Wh += d.row1Wh;
+                annualRow2Wh += d.row2Wh;
             }
-            
             return { annualRow1Wh, annualRow2Wh };
         }
 
         // ========================================================================
-        //  IDEÁLIS DŐLÉSSZÖG KERESÉS — ÉVES OPTIMUM
+        //  ÉVES OPTIMUM DŐLÉSSZÖG
         // ========================================================================
-
         function findOptimalTiltAnnual(lat, lon, panelPower, L, installedD, PR, isDST) {
-            let maxEnergy = -1;
-            let bestTilt = 0;
-            const currentYear = new Date().getFullYear();
-            
-            // Durva keresés: 5°-os lépésekkel
-            for (let testBeta = 0; testBeta <= 70; testBeta += 5) {
+            let maxE = -1, bestTilt = 0;
+            const year = new Date().getFullYear();
+
+            for (let tb = 0; tb <= 70; tb += 5) {
                 let totalE = 0;
-                // Csak 12 reprezentatív napot szimulálunk (hónapok 21-e) — gyorsítás
-                for (let month = 0; month < 12; month++) {
-                    const date = new Date(currentYear, month, 21);
-                    const daily = calculateDailyEnergy(lat, lon, date, panelPower, testBeta, L, installedD, PR, isDST, true);
-                    // Napok száma ebben a hónapban → súlyozás
-                    const daysInMonth = new Date(currentYear, month + 1, 0).getDate();
-                    totalE += (daily.row1Wh + daily.row2Wh) * daysInMonth;
+                for (let mo = 0; mo < 12; mo++) {
+                    const d = calculateDailyEnergy(lat, lon, new Date(year, mo, 21), panelPower, tb, L, installedD, PR, isDST, true);
+                    totalE += (d.row1Wh + d.row2Wh) * new Date(year, mo + 1, 0).getDate();
                 }
-                if (totalE > maxEnergy) {
-                    maxEnergy = totalE;
-                    bestTilt = testBeta;
-                }
+                if (totalE > maxE) { maxE = totalE; bestTilt = tb; }
             }
-            
-            // Finom keresés: ±5° környezet, 1°-os lépéssel
-            const lo = Math.max(0, bestTilt - 5);
-            const hi = Math.min(90, bestTilt + 5);
-            for (let testBeta = lo; testBeta <= hi; testBeta++) {
+
+            for (let tb = Math.max(0, bestTilt - 5); tb <= Math.min(90, bestTilt + 5); tb++) {
                 let totalE = 0;
-                for (let month = 0; month < 12; month++) {
-                    const date = new Date(currentYear, month, 21);
-                    const daily = calculateDailyEnergy(lat, lon, date, panelPower, testBeta, L, installedD, PR, isDST, true);
-                    const daysInMonth = new Date(currentYear, month + 1, 0).getDate();
-                    totalE += (daily.row1Wh + daily.row2Wh) * daysInMonth;
+                for (let mo = 0; mo < 12; mo++) {
+                    const d = calculateDailyEnergy(lat, lon, new Date(year, mo, 21), panelPower, tb, L, installedD, PR, isDST, true);
+                    totalE += (d.row1Wh + d.row2Wh) * new Date(year, mo + 1, 0).getDate();
                 }
-                if (totalE > maxEnergy) {
-                    maxEnergy = totalE;
-                    bestTilt = testBeta;
-                }
+                if (totalE > maxE) { maxE = totalE; bestTilt = tb; }
             }
-            
             return bestTilt;
         }
 
         // ========================================================================
-        //  FŐ SZÁMÍTÁSI FÜGGVÉNY
+        //  FŐ SZÁMÍTÁS
         // ========================================================================
-
         function calculate() {
             const lat = parseFloat(document.getElementById('latitude').value);
             const lon = parseFloat(document.getElementById('longitude').value);
@@ -590,7 +536,6 @@
             document.getElementById('prVal').innerText = PR.toFixed(2);
             document.getElementById('currentDateDisplay').innerText = dateVal.toLocaleDateString('hu-HU', { year: 'numeric', month: 'long', day: 'numeric' });
 
-            // Idő megjelenítés
             const h = Math.floor(minutes / 60);
             const m = minutes % 60;
             document.getElementById('timeDisplay').innerText = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
@@ -599,120 +544,91 @@
             const P = L * Math.cos(betaRad);
             const H = L * Math.sin(betaRad);
 
-            // Aktuális pillanat számítása
             const current = calculateSunPosition(lat, lon, dateVal, minutes, betaRad, P, H, installedD, isDST);
-            
-            // Szoláris idő megjelenítés
+
+            // Szoláris idő
             let lstM = Math.floor(current.solarMinutes);
-            let lstH = Math.floor(lstM / 60) % 24;
-            if (lstH < 0) lstH += 24;
+            let lstH = ((Math.floor(lstM / 60) % 24) + 24) % 24;
             let lstMin = ((lstM % 60) + 60) % 60;
             document.getElementById('solarTimeDisplay').innerText = `${lstH.toString().padStart(2, '0')}:${lstMin.toString().padStart(2, '0')}`;
-
             document.getElementById('sunAltDisplay').innerText = current.alphaDeg.toFixed(1);
             document.getElementById('sunAziDisplay').innerText = current.azimuthDeg.toFixed(1);
-            
+
             const isDay = current.alphaDeg > 0;
-            if (isDay) {
-                document.getElementById('currS').innerText = Math.round(Math.max(0, current.shadowNS)) + ' mm';
-            } else {
-                document.getElementById('currS').innerText = "---";
-            }
+            document.getElementById('currS').innerText = isDay ? Math.round(Math.max(0, current.shadowNS)) + ' mm' : "---";
 
-            // --- Napi Energia (azonnali) ---
-            const dailyData = calculateDailyEnergy(lat, lon, dateVal, panelPower, beta, L, installedD, PR, isDST, true);
-            const dailyRow1Kwh = (dailyData.row1Wh / 1000).toFixed(2);
-            const dailyRow2Kwh = (dailyData.row2Wh / 1000).toFixed(2);
-            const dailyTotalKwh = ((dailyData.row1Wh + dailyData.row2Wh) / 1000).toFixed(2);
-
-            document.getElementById('totalEnergy').innerText = `${dailyTotalKwh} kWh`;
-            document.getElementById('p1Energy').innerText = `${dailyRow1Kwh} kWh`;
-            document.getElementById('p2Energy').innerText = `${dailyRow2Kwh} kWh`;
+            // Napi energia
+            const daily = calculateDailyEnergy(lat, lon, dateVal, panelPower, beta, L, installedD, PR, isDST, true);
+            document.getElementById('totalEnergy').innerText = `${((daily.row1Wh + daily.row2Wh) / 1000).toFixed(2)} kWh`;
+            document.getElementById('p1Energy').innerText = `${(daily.row1Wh / 1000).toFixed(2)} kWh`;
+            document.getElementById('p2Energy').innerText = `${(daily.row2Wh / 1000).toFixed(2)} kWh`;
             document.getElementById('dailyKt').innerText = MONTHLY_KT[dateVal.getMonth()].toFixed(2);
 
             const lossElem = document.getElementById('lossText');
-            const dailyIdealBothRows = dailyData.row1Wh * 2; // ha mindkét sor árnyékmentesen termelne
-            const dailyActualBothRows = dailyData.row1Wh + dailyData.row2Wh;
-
-            if (dailyIdealBothRows > 0) {
-                const lossPercent = ((1 - (dailyActualBothRows / dailyIdealBothRows)) * 100).toFixed(1);
-                if (lossPercent > 0.05) {
-                    lossElem.innerText = `Napi árnyék-veszteség: -${lossPercent}%`;
-                    lossElem.className = "text-[10px] print:text-[8px] font-bold mt-1 pt-1 border-t border-amber-200/80 text-red-600";
-                } else {
-                    lossElem.innerText = "Nincs árnyék-veszteség";
-                    lossElem.className = "text-[10px] print:text-[8px] font-bold mt-1 pt-1 border-t border-amber-200/80 text-emerald-600";
-                }
+            const idealBoth = daily.row1Wh * 2;
+            const actualBoth = daily.row1Wh + daily.row2Wh;
+            if (idealBoth > 0) {
+                const lp = ((1 - actualBoth / idealBoth) * 100).toFixed(1);
+                lossElem.innerText = lp > 0.05 ? `Árnyék-veszteség: -${lp}%` : "Nincs árnyék-veszteség";
+                lossElem.className = `text-[10px] font-bold mt-1 pt-1 border-t border-amber-200/80 ${lp > 0.05 ? 'text-red-600' : 'text-emerald-600'}`;
             } else {
                 lossElem.innerText = "Nincs termelés";
-                lossElem.className = "text-[10px] print:text-[8px] font-bold mt-1 pt-1 border-t border-amber-200/80 text-slate-500";
+                lossElem.className = "text-[10px] font-bold mt-1 pt-1 border-t border-amber-200/80 text-slate-500";
             }
 
-            // --- Éves Energia (debounced) ---
-            const statusElem = document.getElementById('annualCalcStatus');
-            statusElem.innerHTML = '<span class="spinner"></span> számolás...';
-            
+            // Éves (debounced)
+            document.getElementById('annualCalcStatus').innerHTML = '<span class="spinner"></span> számolás...';
             clearTimeout(annualCalcTimeout);
             annualCalcTimeout = setTimeout(() => {
-                const annualData = calculateAnnualEnergy(lat, lon, panelPower, beta, L, installedD, PR, isDST);
-                const annualRow1Kwh = (annualData.annualRow1Wh / 1000).toFixed(0);
-                const annualRow2Kwh = (annualData.annualRow2Wh / 1000).toFixed(0);
-                const annualTotalKwh = ((annualData.annualRow1Wh + annualData.annualRow2Wh) / 1000).toFixed(0);
+                const annual = calculateAnnualEnergy(lat, lon, panelPower, beta, L, installedD, PR, isDST);
+                document.getElementById('annualTotalEnergy').innerText = `${((annual.annualRow1Wh + annual.annualRow2Wh) / 1000).toFixed(0)} kWh`;
+                document.getElementById('annualP1Energy').innerText = `${(annual.annualRow1Wh / 1000).toFixed(0)} kWh`;
+                document.getElementById('annualP2Energy').innerText = `${(annual.annualRow2Wh / 1000).toFixed(0)} kWh`;
+                document.getElementById('annualCalcStatus').innerText = 'kész ✓';
 
-                document.getElementById('annualTotalEnergy').innerText = `${annualTotalKwh} kWh`;
-                document.getElementById('annualP1Energy').innerText = `${annualRow1Kwh} kWh`;
-                document.getElementById('annualP2Energy').innerText = `${annualRow2Kwh} kWh`;
-                statusElem.innerText = 'kész ✓';
-
-                const annualLossElem = document.getElementById('annualLossText');
-                const annualIdealBoth = annualData.annualRow1Wh * 2;
-                const annualActualBoth = annualData.annualRow1Wh + annualData.annualRow2Wh;
-
-                if (annualIdealBoth > 0) {
-                    const annualLossPercent = ((1 - (annualActualBoth / annualIdealBoth)) * 100).toFixed(1);
-                    if (annualLossPercent > 0.05) {
-                        annualLossElem.innerText = `Éves árnyék-veszteség: -${annualLossPercent}%`;
-                        annualLossElem.className = "text-[10px] print:text-[8px] font-bold mt-1 pt-1 border-t border-indigo-200/80 text-red-600";
-                    } else {
-                        annualLossElem.innerText = "Nincs árnyék-veszteség";
-                        annualLossElem.className = "text-[10px] print:text-[8px] font-bold mt-1 pt-1 border-t border-indigo-200/80 text-emerald-600";
-                    }
+                const aLossElem = document.getElementById('annualLossText');
+                const aIdeal = annual.annualRow1Wh * 2;
+                const aActual = annual.annualRow1Wh + annual.annualRow2Wh;
+                if (aIdeal > 0) {
+                    const alp = ((1 - aActual / aIdeal) * 100).toFixed(1);
+                    aLossElem.innerText = alp > 0.05 ? `Árnyék-veszteség: -${alp}%` : "Nincs árnyék-veszteség";
+                    aLossElem.className = `text-[10px] font-bold mt-1 pt-1 border-t border-indigo-200/80 ${alp > 0.05 ? 'text-red-600' : 'text-emerald-600'}`;
                 }
 
-                // Ideális dőlésszög (éves optimum)
                 const idealTilt = findOptimalTiltAnnual(lat, lon, panelPower, L, installedD, PR, isDST);
                 document.getElementById('idealTiltDisplay').innerText = idealTilt;
-                const printElem = document.getElementById('printIdealTiltDisplay');
-                if (printElem) printElem.innerText = idealTilt;
-
+                const pe = document.getElementById('printIdealTiltDisplay');
+                if (pe) pe.innerText = idealTilt;
             }, 600);
 
-            // --- Téli Javaslat ---
+            // Téli javaslat
             const dec21 = new Date(dateVal.getFullYear(), 11, 21);
             const dec21Step = calculateSunPosition(lat, lon, dec21, 720, betaRad, P, H, installedD, false);
-            // Dec 21, dél: legalacsonyabb napállás → legnagyobb É-D árnyék
-            const worstShadowNS = H / Math.tan(dec21Step.alphaDeg * DEG2RAD); // délben azimut=0 → cos=1
-            const recD = P + worstShadowNS;
-            document.getElementById('recD').innerText = Math.round(recD) + ' mm';
+            if (dec21Step.alphaDeg > 0) {
+                const recDVal = P + H / Math.tan(dec21Step.alphaDeg * DEG2RAD);
+                document.getElementById('recD').innerText = Math.round(recDVal) + ' mm';
+            } else {
+                document.getElementById('recD').innerText = '∞';
+            }
 
-            // --- Helyigény ---
+            // Helyigény
             const totalRequired = installedD + P;
             const diff = areaL - totalRequired;
             const areaCard = document.getElementById('areaCard');
             const totalSpaceElem = document.getElementById('totalSpace');
             const overhangElem = document.getElementById('overhangText');
-
             totalSpaceElem.innerText = Math.round(totalRequired) + ' mm';
+
             if (diff < 0) {
                 overhangElem.innerText = `Túllógás: ${Math.round(Math.abs(diff))} mm`;
-                overhangElem.className = "text-[11px] print:text-[8px] font-bold mt-1 text-red-600";
-                areaCard.className = "card p-4 bg-red-50 border-b-4 border-red-500 print:col-span-1";
-                totalSpaceElem.className = "text-xl print:text-lg font-black text-red-900";
+                overhangElem.className = "text-[9px] sm:text-[10px] font-bold mt-0.5 text-red-600";
+                areaCard.className = "card p-3 sm:p-4 bg-red-50 border-b-4 border-red-500";
+                totalSpaceElem.className = "text-lg sm:text-xl font-black text-red-900 mt-0.5";
             } else {
-                overhangElem.innerText = `Szabad hely: ${Math.round(diff)} mm`;
-                overhangElem.className = "text-[11px] print:text-[8px] font-bold mt-1 text-emerald-600";
-                areaCard.className = "card p-4 bg-white border-b-4 border-slate-200 print:col-span-1";
-                totalSpaceElem.className = "text-xl print:text-lg font-black text-slate-800";
+                overhangElem.innerText = `Szabad: ${Math.round(diff)} mm`;
+                overhangElem.className = "text-[9px] sm:text-[10px] font-bold mt-0.5 text-emerald-600";
+                areaCard.className = "card p-3 sm:p-4 bg-white border-b-4 border-slate-200";
+                totalSpaceElem.className = "text-lg sm:text-xl font-black text-slate-800 mt-0.5";
             }
 
             updateUI(current.isShadowed, isDay);
@@ -722,7 +638,6 @@
         // ========================================================================
         //  UI FRISSÍTÉSEK
         // ========================================================================
-
         function updateUI(isShadowing, isDay) {
             const statusMsg = document.getElementById('statusMsg');
             const statusDesc = document.getElementById('statusDesc');
@@ -733,74 +648,64 @@
                 night.classList.remove('hidden');
                 warning.classList.add('hidden');
                 statusMsg.innerText = "Éjszaka";
-                statusMsg.className = "text-xl print:text-lg font-black text-slate-400";
+                statusMsg.className = "text-lg sm:text-xl font-black text-slate-400 mt-0.5";
                 statusDesc.innerText = "Nincs napsugárzás.";
             } else {
                 night.classList.add('hidden');
                 if (isShadowing) {
                     warning.classList.remove('hidden');
                     statusMsg.innerText = "Árnyékolt!";
-                    statusMsg.className = "text-xl print:text-lg font-black text-red-600";
-                    statusDesc.innerText = "A 2. sor teljesítménye csökken.";
+                    statusMsg.className = "text-lg sm:text-xl font-black text-red-600 mt-0.5";
+                    statusDesc.innerText = "2. sor teljesítménye csökken.";
                 } else {
                     warning.classList.add('hidden');
                     statusMsg.innerText = "Biztonságos";
-                    statusMsg.className = "text-xl print:text-lg font-black text-emerald-600";
+                    statusMsg.className = "text-lg sm:text-xl font-black text-emerald-600 mt-0.5";
                     statusDesc.innerText = "Nincs árnyékvetés.";
                 }
             }
         }
 
         function updateViz(L, beta, alpha, installedD, P, shadowNS, isDay, isShadowing, areaL, totalRequired) {
-            const scale = 0.08;
-            const startX = 200;
-            const groundY = 220;
-            const betaRad = beta * DEG2RAD;
-            const alphaRad = alpha * DEG2RAD;
+            const scale = 0.08, startX = 200, groundY = 220;
+            const betaRad = beta * DEG2RAD, alphaRad = alpha * DEG2RAD;
 
-            const p1x2 = startX + (L * scale * Math.cos(betaRad));
-            const p1y2 = groundY - (L * scale * Math.sin(betaRad));
-            document.getElementById('p1').setAttribute('x1', startX);
-            document.getElementById('p1').setAttribute('y1', groundY);
-            document.getElementById('p1').setAttribute('x2', p1x2);
-            document.getElementById('p1').setAttribute('y2', p1y2);
+            const p1x2 = startX + L * scale * Math.cos(betaRad);
+            const p1y2 = groundY - L * scale * Math.sin(betaRad);
+            const el_p1 = document.getElementById('p1');
+            el_p1.setAttribute('x1', startX); el_p1.setAttribute('y1', groundY);
+            el_p1.setAttribute('x2', p1x2); el_p1.setAttribute('y2', p1y2);
 
-            const p2StartX = startX + (installedD * scale);
-            const p2x2 = p2StartX + (L * scale * Math.cos(betaRad));
-            const p2y2 = groundY - (L * scale * Math.sin(betaRad));
-            
-            const p2 = document.getElementById('p2');
-            p2.setAttribute('x1', p2StartX); p2.setAttribute('y1', groundY);
-            p2.setAttribute('x2', p2x2); p2.setAttribute('y2', p2y2);
-            p2.setAttribute('stroke', isShadowing ? '#ef4444' : '#1e40af');
-            document.getElementById('p2Label').setAttribute('x', p2StartX);
+            const p2sx = startX + installedD * scale;
+            const p2x2 = p2sx + L * scale * Math.cos(betaRad);
+            const p2y2 = groundY - L * scale * Math.sin(betaRad);
+            const el_p2 = document.getElementById('p2');
+            el_p2.setAttribute('x1', p2sx); el_p2.setAttribute('y1', groundY);
+            el_p2.setAttribute('x2', p2x2); el_p2.setAttribute('y2', p2y2);
+            el_p2.setAttribute('stroke', isShadowing ? '#ef4444' : '#1e40af');
+            document.getElementById('p2Label').setAttribute('x', p2sx);
 
             document.getElementById('distLine').setAttribute('x1', startX);
-            document.getElementById('distLine').setAttribute('x2', p2StartX);
-            document.getElementById('distText').setAttribute('x', (startX + p2StartX) / 2);
+            document.getElementById('distLine').setAttribute('x2', p2sx);
+            document.getElementById('distText').setAttribute('x', (startX + p2sx) / 2);
             document.getElementById('distText').textContent = `D = ${Math.round(installedD)} mm`;
 
-            const areaBoundaryX = startX + (areaL * scale);
-            const boundLine = document.getElementById('areaBoundary');
-            const boundText = document.getElementById('areaText');
-            const overhangHighlight = document.getElementById('overhangHighlight');
-            
-            boundLine.setAttribute('x1', areaBoundaryX);
-            boundLine.setAttribute('x2', areaBoundaryX);
-            boundText.setAttribute('x', areaBoundaryX);
+            const abx = startX + areaL * scale;
+            const bl = document.getElementById('areaBoundary');
+            const bt = document.getElementById('areaText');
+            const oh = document.getElementById('overhangHighlight');
+            bl.setAttribute('x1', abx); bl.setAttribute('x2', abx);
+            bt.setAttribute('x', abx);
 
             if (totalRequired > areaL) {
-                boundLine.setAttribute('stroke', '#ef4444');
-                boundText.setAttribute('fill', '#ef4444');
-                boundText.textContent = '⚠️ Terület vége (Túllóg!)';
-                overhangHighlight.setAttribute('x', areaBoundaryX);
-                overhangHighlight.setAttribute('width', (totalRequired - areaL) * scale);
-                overhangHighlight.style.display = 'block';
+                bl.setAttribute('stroke', '#ef4444'); bt.setAttribute('fill', '#ef4444');
+                bt.textContent = '⚠️ Túllóg!';
+                oh.setAttribute('x', abx); oh.setAttribute('width', (totalRequired - areaL) * scale);
+                oh.style.display = 'block';
             } else {
-                boundLine.setAttribute('stroke', '#3b82f6');
-                boundText.setAttribute('fill', '#3b82f6');
-                boundText.textContent = 'Terület vége';
-                overhangHighlight.style.display = 'none';
+                bl.setAttribute('stroke', '#3b82f6'); bt.setAttribute('fill', '#3b82f6');
+                bt.textContent = 'Terület vége';
+                oh.style.display = 'none';
             }
 
             const shadow = document.getElementById('shadowPoly');
@@ -809,20 +714,18 @@
             const sky = document.getElementById('sky');
 
             if (isDay && alpha > 0) {
-                const shadowEndX = p1x2 + (shadowNS * scale);
-                shadow.setAttribute('points', `${p1x2},${groundY} ${shadowEndX},${groundY} ${p1x2},${p1y2}`);
+                const sex = p1x2 + shadowNS * scale;
+                shadow.setAttribute('points', `${p1x2},${groundY} ${sex},${groundY} ${p1x2},${p1y2}`);
                 shadow.style.display = 'block';
-
-                const sunX = p1x2 - (600 * Math.cos(alphaRad));
-                const sunY = p1y2 - (600 * Math.sin(alphaRad));
-                sunRay.setAttribute('x1', sunX); sunRay.setAttribute('y1', sunY);
-                sunRay.setAttribute('x2', shadowEndX); sunRay.setAttribute('y2', groundY);
+                const sx = p1x2 - 600 * Math.cos(alphaRad);
+                const sy = p1y2 - 600 * Math.sin(alphaRad);
+                sunRay.setAttribute('x1', sx); sunRay.setAttribute('y1', sy);
+                sunRay.setAttribute('x2', sex); sunRay.setAttribute('y2', groundY);
                 sunRay.style.display = 'block';
-                sunGroup.setAttribute('transform', `translate(${sunX}, ${sunY})`);
+                sunGroup.setAttribute('transform', `translate(${sx},${sy})`);
                 sunGroup.style.display = 'block';
-
                 const b = Math.min(100, alpha * 2 + 10);
-                sky.setAttribute('fill', `rgb(${220+b/4}, ${235+b/8}, 255)`);
+                sky.setAttribute('fill', `rgb(${220+b/4},${235+b/8},255)`);
             } else {
                 shadow.style.display = 'none';
                 sunRay.style.display = 'none';
@@ -832,83 +735,67 @@
         }
 
         // ========================================================================
-        //  GLOBÁLIS FUNKCIÓK (onclick-hoz)
+        //  GLOBÁLIS FUNKCIÓK
         // ========================================================================
-
         window.geocodeCity = async function() {
             const city = document.getElementById('cityName').value;
             if (!city) return;
             const btn = document.getElementById('searchCityBtn');
-            const origText = btn.innerText;
+            const orig = btn.innerText;
             btn.innerText = "⏳";
             try {
-                const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(city)}`);
-                const data = await response.json();
+                const r = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(city)}`);
+                const data = await r.json();
                 if (data && data.length > 0) {
                     document.getElementById('latitude').value = parseFloat(data[0].lat).toFixed(4);
                     document.getElementById('longitude').value = parseFloat(data[0].lon).toFixed(4);
                     calculate();
-                } else {
-                    alert("A megadott település nem található!");
-                }
-            } catch (error) {
-                console.error("Geocoding error:", error);
-                alert("Hálózati hiba a helymeghatározás során.");
-            }
-            btn.innerText = origText;
+                } else { alert("Település nem található!"); }
+            } catch (e) { alert("Hálózati hiba."); }
+            btn.innerText = orig;
         };
 
         window.getLocation = function() {
             if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(position => {
-                    document.getElementById('latitude').value = position.coords.latitude.toFixed(4);
-                    document.getElementById('longitude').value = position.coords.longitude.toFixed(4);
-                    document.getElementById('cityName').value = "Saját GPS pozíció";
+                navigator.geolocation.getCurrentPosition(pos => {
+                    document.getElementById('latitude').value = pos.coords.latitude.toFixed(4);
+                    document.getElementById('longitude').value = pos.coords.longitude.toFixed(4);
+                    document.getElementById('cityName').value = "GPS pozíció";
                     calculate();
-                }, () => alert("GPS hiba. Kérjük adja meg manuálisan vagy keressen településre!"));
+                }, () => alert("GPS hiba!"));
             }
         };
 
         let tiltBtnTimeout;
         window.setIdealTilt = function() {
-            const displayElem = document.getElementById('idealTiltDisplay');
-            if (!displayElem) return;
-            const idealTilt = displayElem.innerText;
-            if (idealTilt !== '--') {
-                document.getElementById('tiltAngle').value = idealTilt;
-                calculate();
-                const btn = document.getElementById('idealTiltBtn');
-                const defaultText = document.getElementById('idealBtnDefault');
-                const successText = document.getElementById('idealBtnSuccess');
-                const origClass = "print:hidden text-[9px] bg-orange-100 text-orange-700 hover:bg-orange-200 px-2 py-0.5 rounded font-bold transition cursor-pointer shadow-sm";
-                btn.className = "print:hidden text-[9px] bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded font-bold transition shadow-sm";
-                if (defaultText && successText) {
-                    defaultText.classList.add('hidden');
-                    successText.classList.remove('hidden');
-                    clearTimeout(tiltBtnTimeout);
-                    tiltBtnTimeout = setTimeout(() => {
-                        btn.className = origClass;
-                        defaultText.classList.remove('hidden');
-                        successText.classList.add('hidden');
-                    }, 1500);
-                }
-            }
+            const de = document.getElementById('idealTiltDisplay');
+            if (!de || de.innerText === '--') return;
+            document.getElementById('tiltAngle').value = de.innerText;
+            calculate();
+            const btn = document.getElementById('idealTiltBtn');
+            const dt = document.getElementById('idealBtnDefault');
+            const st = document.getElementById('idealBtnSuccess');
+            const origCls = "no-print text-[10px] bg-orange-100 text-orange-700 hover:bg-orange-200 active:bg-orange-300 px-2.5 py-1 rounded font-bold transition cursor-pointer shadow-sm";
+            btn.className = "no-print text-[10px] bg-emerald-100 text-emerald-700 px-2.5 py-1 rounded font-bold transition shadow-sm";
+            dt.classList.add('hidden'); st.classList.remove('hidden');
+            clearTimeout(tiltBtnTimeout);
+            tiltBtnTimeout = setTimeout(() => {
+                btn.className = origCls;
+                dt.classList.remove('hidden'); st.classList.add('hidden');
+            }, 1500);
         };
 
         // ========================================================================
-        //  INICIALIZÁLÁS
+        //  INIT
         // ========================================================================
-
-        // Event listenerek
-        const reactiveInputs = ['latitude', 'longitude', 'calcDate', 'panelLength',
-                                 'panelPower', 'tiltAngle', 'installedDist', 'areaLength',
-                                 'timeSlider', 'performanceRatio', 'dstCheckbox'];
-        reactiveInputs.forEach(id => {
+        ['latitude','longitude','calcDate','panelLength','panelPower','tiltAngle',
+         'installedDist','areaLength','timeSlider','performanceRatio','dstCheckbox'
+        ].forEach(id => {
             const el = document.getElementById(id);
             el.addEventListener('input', calculate);
-            el.addEventListener('change', calculate); // checkbox-hoz kell
+            el.addEventListener('change', calculate);
         });
-        
+
         calculate();
     </script>
 </body>
