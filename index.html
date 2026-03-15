@@ -357,7 +357,8 @@
                                 id="timeDisplay">12:00</div>
                             <div class="flex flex-col sm:items-end">
                                 <div class="text-[10px] font-bold text-amber-600" title="Valós Szoláris Idő">SOLAR:
-                                    <span id="solarTimeDisplay">12:00</span></div>
+                                    <span id="solarTimeDisplay">12:00</span>
+                                </div>
                                 <div class="text-[10px] font-bold text-slate-400">ALT: <span
                                         id="sunAltDisplay">0</span>° AZ: <span id="sunAziDisplay">0</span>°</div>
                             </div>
@@ -468,9 +469,11 @@
                         <p class="text-xl sm:text-2xl font-black text-amber-900 mt-0.5" id="totalEnergy">--- kWh</p>
                         <div class="mt-1 text-[10px] font-bold text-amber-800 w-full z-10 relative">
                             <div class="flex justify-between border-b border-amber-200/50 py-0.5"><span>1. Sor:</span>
-                                <span id="p1Energy">---</span></div>
+                                <span id="p1Energy">---</span>
+                            </div>
                             <div class="flex justify-between border-b border-amber-200/50 py-0.5"><span>2. Sor:</span>
-                                <span id="p2Energy">---</span></div>
+                                <span id="p2Energy">---</span>
+                            </div>
                             <div class="flex justify-between py-0.5 text-amber-500"><span>Kt:</span> <span
                                     id="dailyKt">---</span></div>
                         </div>
@@ -492,7 +495,8 @@
                         </p>
                         <div class="mt-1 text-[10px] font-bold text-indigo-800 w-full z-10 relative">
                             <div class="flex justify-between border-b border-indigo-200/50 py-0.5"><span>1. Sor:</span>
-                                <span id="annualP1Energy">---</span></div>
+                                <span id="annualP1Energy">---</span>
+                            </div>
                             <div class="flex justify-between py-0.5"><span>2. Sor:</span> <span
                                     id="annualP2Energy">---</span></div>
                         </div>
@@ -516,8 +520,10 @@
         const DEG2RAD = Math.PI / 180;
         const RAD2DEG = 180 / Math.PI;
 
-        // Havi clearness index — Közép-Európa (Budapest)
-        const MONTHLY_KT = [0.33, 0.38, 0.44, 0.48, 0.51, 0.53, 0.55, 0.53, 0.48, 0.40, 0.33, 0.30];
+        // Havi felhőtényező — Közép-Európa (Budapest)
+        // Az AM-modell (Hottel) már tartalmazza a derült ég légköri elnyelését,
+        // ezért csak a felhőzet hatását adjuk hozzá (Kt / Kt_clear_sky).
+        const MONTHLY_CLOUD = [0.47, 0.54, 0.63, 0.69, 0.73, 0.76, 0.79, 0.76, 0.69, 0.57, 0.47, 0.43];
 
         document.getElementById('calcDate').valueAsDate = new Date();
 
@@ -593,11 +599,11 @@
 
                 if (cosTheta > 0) {
                     const AM = 1 / (Math.sin(alphaRad) + 0.50572 * Math.pow(96.07995 - alphaDeg, -1.6364));
-                    intensityFactor = cosTheta * 1.1 * Math.pow(0.7, Math.pow(AM, 0.678));
+                    intensityFactor = cosTheta * 1.353 * Math.pow(0.7, Math.pow(AM, 0.678));
                 }
 
                 const skyViewFactor = (1 + Math.cos(betaRad)) / 2;
-                intensityFactor += 0.10 * sinAlpha * skyViewFactor;
+                intensityFactor += 0.12 * sinAlpha * skyViewFactor;
             }
 
             return { alphaDeg, azimuthDeg, intensityFactor, shadowFraction, shadowNS, solarMinutes };
@@ -611,12 +617,12 @@
             const betaRad = beta * DEG2RAD;
             const P = L * Math.cos(betaRad);
             const H = L * Math.sin(betaRad);
-            const Kt = useKt ? MONTHLY_KT[date.getMonth()] : 1.0;
+            const cloudFactor = useKt ? MONTHLY_CLOUD[date.getMonth()] : 1.0;
 
             for (let m = 0; m < 1440; m += 5) {
                 const step = calculateSunPosition(lat, lon, date, m, betaRad, P, H, installedD, isDST);
                 if (step.alphaDeg > 0 && step.intensityFactor > 0) {
-                    const power = panelPower * step.intensityFactor * PR * Kt;
+                    const power = panelPower * step.intensityFactor * PR * cloudFactor;
                     row1Wh += power * (5 / 60);
                     // Bypass-dióda modell: 3 csoport, részleges árnyékolás
                     let row2Factor = 1.0;
@@ -719,7 +725,7 @@
             document.getElementById('totalEnergy').innerText = `${((daily.row1Wh + daily.row2Wh) / 1000).toFixed(2)} kWh`;
             document.getElementById('p1Energy').innerText = `${(daily.row1Wh / 1000).toFixed(2)} kWh`;
             document.getElementById('p2Energy').innerText = `${(daily.row2Wh / 1000).toFixed(2)} kWh`;
-            document.getElementById('dailyKt').innerText = MONTHLY_KT[dateVal.getMonth()].toFixed(2);
+            document.getElementById('dailyKt').innerText = MONTHLY_CLOUD[dateVal.getMonth()].toFixed(2);
 
             const lossElem = document.getElementById('lossText');
             const idealBoth = daily.row1Wh * 2;
