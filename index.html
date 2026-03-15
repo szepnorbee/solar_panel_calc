@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="hu">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -11,18 +12,22 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             -webkit-tap-highlight-color: transparent;
         }
+
         .card {
             background: white;
             border-radius: 0.75rem;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
+
         .input-field {
             width: 100%;
             padding: 0.5rem 0.4rem;
             border: 1px solid #cbd5e1;
             border-radius: 0.4rem;
-            font-size: 16px; /* 16px: iOS nem zoomol rá */
+            font-size: 16px;
+            /* 16px: iOS nem zoomol rá */
         }
+
         /* Slider — nagyobb touch target */
         .slider {
             -webkit-appearance: none;
@@ -34,6 +39,7 @@
             padding: 0;
             margin: 8px 0;
         }
+
         .slider::-webkit-slider-thumb {
             -webkit-appearance: none;
             appearance: none;
@@ -42,8 +48,9 @@
             border-radius: 50%;
             background: #3b82f6;
             cursor: pointer;
-            box-shadow: 0 2px 6px rgba(59,130,246,0.4);
+            box-shadow: 0 2px 6px rgba(59, 130, 246, 0.4);
         }
+
         .slider::-moz-range-thumb {
             width: 28px;
             height: 28px;
@@ -51,48 +58,90 @@
             background: #3b82f6;
             cursor: pointer;
             border: none;
-            box-shadow: 0 2px 6px rgba(59,130,246,0.4);
+            box-shadow: 0 2px 6px rgba(59, 130, 246, 0.4);
         }
-        .warning-glow { animation: glow 1.5s infinite; }
+
+        .warning-glow {
+            animation: glow 1.5s infinite;
+        }
+
         @keyframes glow {
-            0%   { filter: drop-shadow(0 0 2px rgba(239,68,68,0.5)); }
-            50%  { filter: drop-shadow(0 0 10px rgba(239,68,68,0.8)); }
-            100% { filter: drop-shadow(0 0 2px rgba(239,68,68,0.5)); }
+            0% {
+                filter: drop-shadow(0 0 2px rgba(239, 68, 68, 0.5));
+            }
+
+            50% {
+                filter: drop-shadow(0 0 10px rgba(239, 68, 68, 0.8));
+            }
+
+            100% {
+                filter: drop-shadow(0 0 2px rgba(239, 68, 68, 0.5));
+            }
         }
+
         .spinner {
             display: inline-block;
-            width: 12px; height: 12px;
-            border: 2px solid rgba(99,102,241,0.3);
+            width: 12px;
+            height: 12px;
+            border: 2px solid rgba(99, 102, 241, 0.3);
             border-top-color: #6366f1;
             border-radius: 50%;
             animation: spin 0.6s linear infinite;
         }
-        @keyframes spin { to { transform: rotate(360deg); } }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
 
         /* Collapsible szekciók mobilon */
-        .section-toggle { display: none; }
+        .section-toggle {
+            display: none;
+        }
+
         @media (max-width: 1023px) {
-            .section-toggle { display: flex; }
-            .section-body.collapsed { display: none; }
+            .section-toggle {
+                display: flex;
+            }
+
+            .section-body.collapsed {
+                display: none;
+            }
         }
 
         /* Nyomtatás */
         @media print {
-            @page { size: A4 portrait; margin: 12mm; }
+            @page {
+                size: A4 portrait;
+                margin: 12mm;
+            }
+
             body {
                 background-color: #fff !important;
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
             }
+
             .card {
                 box-shadow: none !important;
                 border: 1px solid #cbd5e1 !important;
                 break-inside: avoid;
                 padding: 0.75rem !important;
             }
-            .warning-glow { animation: none !important; filter: none !important; }
-            .no-print { display: none !important; }
-            input[type="number"], input[type="text"], input[type="date"] {
+
+            .warning-glow {
+                animation: none !important;
+                filter: none !important;
+            }
+
+            .no-print {
+                display: none !important;
+            }
+
+            input[type="number"],
+            input[type="text"],
+            input[type="date"] {
                 border: none !important;
                 border-bottom: 1px dashed #94a3b8 !important;
                 background-color: transparent !important;
@@ -106,17 +155,26 @@
         }
     </style>
 </head>
+
 <body class="p-2 sm:p-4 md:p-6 print:p-0">
     <div class="max-w-6xl mx-auto">
 
         <!-- Fejléc -->
-        <header class="mb-4 sm:mb-8 print:mb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-4 border-b border-slate-200 pb-3 print:pb-2">
+        <header
+            class="mb-4 sm:mb-8 print:mb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-4 border-b border-slate-200 pb-3 print:pb-2">
             <div>
-                <h1 class="text-xl sm:text-3xl print:text-2xl font-extrabold text-slate-800 leading-tight">☀️ Napelem Szimulátor</h1>
-                <p class="text-xs sm:text-sm text-slate-500 print:text-xs">Árnyék · Termelés · Azimut-korrekció · Felhőzeti modell</p>
+                <h1 class="text-xl sm:text-3xl print:text-2xl font-extrabold text-slate-800 leading-tight">☀️ Napelem
+                    Szimulátor</h1>
+                <p class="text-xs sm:text-sm text-slate-500 print:text-xs">Árnyék · Termelés · Azimut-korrekció ·
+                    Felhőzeti modell</p>
             </div>
-            <button onclick="window.print()" class="no-print print:hidden bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold py-2 px-4 rounded-lg shadow flex items-center transition shrink-0">
-                <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+            <button onclick="window.print()"
+                class="no-print print:hidden bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold py-2 px-4 rounded-lg shadow flex items-center transition shrink-0">
+                <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z">
+                    </path>
+                </svg>
                 Nyomtatás
             </button>
         </header>
@@ -129,39 +187,56 @@
 
                 <!-- Helyszín és Dátum -->
                 <div class="card border-t-4 border-blue-500 overflow-hidden">
-                    <button onclick="toggleSection('locSection')" class="section-toggle w-full p-4 text-left font-bold text-slate-700 uppercase tracking-wider text-sm items-center justify-between active:bg-slate-50">
+                    <button onclick="toggleSection('locSection')"
+                        class="section-toggle w-full p-4 text-left font-bold text-slate-700 uppercase tracking-wider text-sm items-center justify-between active:bg-slate-50">
                         <span class="flex items-center gap-2">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/></svg>
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                            </svg>
                             Helyszín és Dátum
                         </span>
-                        <svg id="locSectionChevron" class="w-5 h-5 text-slate-400 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        <svg id="locSectionChevron" class="w-5 h-5 text-slate-400 transition-transform" fill="none"
+                            stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
                     </button>
                     <!-- Desktop: mindig látszik a cím -->
-                    <h2 class="hidden lg:flex text-md font-bold px-5 pt-5 pb-2 items-center text-slate-700 uppercase tracking-wider print:px-3 print:pt-3 print:text-sm">
-                        <svg class="w-5 h-5 mr-2 print:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/></svg>
+                    <h2
+                        class="hidden lg:flex text-md font-bold px-5 pt-5 pb-2 items-center text-slate-700 uppercase tracking-wider print:px-3 print:pt-3 print:text-sm">
+                        <svg class="w-5 h-5 mr-2 print:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                        </svg>
                         Helyszín és Dátum
                     </h2>
                     <div id="locSection" class="section-body p-4 pt-0 lg:px-5 lg:pb-5 space-y-3 print:space-y-2">
                         <div>
                             <label class="text-[10px] font-bold text-slate-400 uppercase">Település</label>
                             <div class="flex gap-2">
-                                <input type="text" id="cityName" value="Budapest" placeholder="pl. Debrecen" class="input-field flex-grow" onkeypress="if(event.key==='Enter'){geocodeCity();this.blur();}">
-                                <button id="searchCityBtn" onclick="geocodeCity()" class="no-print bg-blue-100 text-blue-700 px-3 py-1.5 rounded font-bold text-sm hover:bg-blue-200 active:bg-blue-300 transition shrink-0">Keresés</button>
+                                <input type="text" id="cityName" value="Budapest" placeholder="pl. Debrecen"
+                                    class="input-field flex-grow"
+                                    onkeypress="if(event.key==='Enter'){geocodeCity();this.blur();}">
+                                <button id="searchCityBtn" onclick="geocodeCity()"
+                                    class="no-print bg-blue-100 text-blue-700 px-3 py-1.5 rounded font-bold text-sm hover:bg-blue-200 active:bg-blue-300 transition shrink-0">Keresés</button>
                             </div>
                         </div>
 
-                        <button onclick="getLocation()" class="no-print w-full bg-slate-800 hover:bg-black active:bg-slate-900 text-white text-xs font-bold py-2.5 rounded transition flex items-center justify-center">
+                        <button onclick="getLocation()"
+                            class="no-print w-full bg-slate-800 hover:bg-black active:bg-slate-900 text-white text-xs font-bold py-2.5 rounded transition flex items-center justify-center">
                             📍 GPS HELYMEGHATÁROZÁS
                         </button>
 
                         <div class="grid grid-cols-2 gap-2">
                             <div>
                                 <label class="text-[10px] font-bold text-slate-400 uppercase">Szélesség (°)</label>
-                                <input type="number" id="latitude" value="47.49" step="0.01" class="input-field bg-slate-50">
+                                <input type="number" id="latitude" value="47.49" step="0.01"
+                                    class="input-field bg-slate-50">
                             </div>
                             <div>
                                 <label class="text-[10px] font-bold text-slate-400 uppercase">Hosszúság (°)</label>
-                                <input type="number" id="longitude" value="19.04" step="0.01" class="input-field bg-slate-50">
+                                <input type="number" id="longitude" value="19.04" step="0.01"
+                                    class="input-field bg-slate-50">
                             </div>
                         </div>
 
@@ -170,24 +245,38 @@
                             <input type="date" id="calcDate" class="input-field">
                         </div>
 
-                        <label class="flex items-center gap-2 bg-sky-50 border border-sky-200 rounded-lg px-3 py-2.5 cursor-pointer active:bg-sky-100">
-                            <input type="checkbox" id="dstCheckbox" class="w-5 h-5 accent-sky-600 cursor-pointer shrink-0">
-                            <span class="text-xs font-bold text-sky-800 select-none">Nyári időszámítás (CEST / UTC+2)</span>
+                        <label
+                            class="flex items-center gap-2 bg-sky-50 border border-sky-200 rounded-lg px-3 py-2.5 cursor-pointer active:bg-sky-100">
+                            <input type="checkbox" id="dstCheckbox"
+                                class="w-5 h-5 accent-sky-600 cursor-pointer shrink-0">
+                            <span class="text-xs font-bold text-sky-800 select-none">Nyári időszámítás (CEST /
+                                UTC+2)</span>
                         </label>
                     </div>
                 </div>
 
                 <!-- Méretek és Rendszer -->
                 <div class="card border-t-4 border-orange-500 overflow-hidden">
-                    <button onclick="toggleSection('sysSection')" class="section-toggle w-full p-4 text-left font-bold text-slate-700 uppercase tracking-wider text-sm items-center justify-between active:bg-slate-50">
+                    <button onclick="toggleSection('sysSection')"
+                        class="section-toggle w-full p-4 text-left font-bold text-slate-700 uppercase tracking-wider text-sm items-center justify-between active:bg-slate-50">
                         <span class="flex items-center gap-2">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M13 10V3L4 14h7v7l9-11h-7z" />
+                            </svg>
                             Méretek és Rendszer
                         </span>
-                        <svg id="sysSectionChevron" class="w-5 h-5 text-slate-400 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        <svg id="sysSectionChevron" class="w-5 h-5 text-slate-400 transition-transform" fill="none"
+                            stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
                     </button>
-                    <h2 class="hidden lg:flex text-md font-bold px-5 pt-5 pb-2 items-center text-slate-700 uppercase tracking-wider print:px-3 print:pt-3 print:text-sm">
-                        <svg class="w-5 h-5 mr-2 print:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                    <h2
+                        class="hidden lg:flex text-md font-bold px-5 pt-5 pb-2 items-center text-slate-700 uppercase tracking-wider print:px-3 print:pt-3 print:text-sm">
+                        <svg class="w-5 h-5 mr-2 print:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
                         Méretek és Rendszer
                     </h2>
                     <div id="sysSection" class="section-body p-4 pt-0 lg:px-5 lg:pb-5 space-y-4 print:space-y-2">
@@ -198,19 +287,24 @@
                             </div>
                             <div>
                                 <label class="text-[10px] font-bold text-amber-600 uppercase">Teljesítmény (Wp)</label>
-                                <input type="number" id="panelPower" value="450" class="input-field border-amber-300 bg-amber-50 font-bold text-amber-900">
+                                <input type="number" id="panelPower" value="450"
+                                    class="input-field border-amber-300 bg-amber-50 font-bold text-amber-900">
                             </div>
                         </div>
 
                         <!-- Dőlésszög -->
                         <div>
                             <div class="flex justify-between items-center mb-1">
-                                <label class="text-xs font-bold text-slate-500">Dőlésszög: <span id="tiltVal" class="text-orange-600 text-base">35</span>°</label>
-                                <button id="idealTiltBtn" onclick="setIdealTilt()" class="no-print text-[10px] bg-orange-100 text-orange-700 hover:bg-orange-200 active:bg-orange-300 px-2.5 py-1 rounded font-bold transition cursor-pointer shadow-sm">
+                                <label class="text-xs font-bold text-slate-500">Dőlésszög: <span id="tiltVal"
+                                        class="text-orange-600 text-base">35</span>°</label>
+                                <button id="idealTiltBtn" onclick="setIdealTilt()"
+                                    class="no-print text-[10px] bg-orange-100 text-orange-700 hover:bg-orange-200 active:bg-orange-300 px-2.5 py-1 rounded font-bold transition cursor-pointer shadow-sm">
                                     <span id="idealBtnDefault">Éves opt.: <span id="idealTiltDisplay">--</span>°</span>
                                     <span id="idealBtnSuccess" class="hidden">✓ BEÁLLÍTVA</span>
                                 </button>
-                                <span class="hidden print:inline text-[9px] bg-orange-100 text-orange-700 px-1 py-0.5 rounded font-bold">Éves opt.: <span id="printIdealTiltDisplay">--</span>°</span>
+                                <span
+                                    class="hidden print:inline text-[9px] bg-orange-100 text-orange-700 px-1 py-0.5 rounded font-bold">Éves
+                                    opt.: <span id="printIdealTiltDisplay">--</span>°</span>
                             </div>
                             <input type="range" id="tiltAngle" min="0" max="90" value="35" class="slider no-print">
                         </div>
@@ -218,12 +312,15 @@
                         <div class="pt-2 border-t border-slate-100">
                             <div class="grid grid-cols-2 gap-2">
                                 <div>
-                                    <label class="text-[10px] font-bold text-slate-500 uppercase">Sortávolság (mm)</label>
-                                    <input type="number" id="installedDist" value="4500" class="input-field border-orange-200 bg-orange-50 font-bold">
+                                    <label class="text-[10px] font-bold text-slate-500 uppercase">Sortávolság
+                                        (mm)</label>
+                                    <input type="number" id="installedDist" value="4500"
+                                        class="input-field border-orange-200 bg-orange-50 font-bold">
                                 </div>
                                 <div>
                                     <label class="text-[10px] font-bold text-slate-500 uppercase">Max. Hely (mm)</label>
-                                    <input type="number" id="areaLength" value="6500" class="input-field border-blue-200 bg-blue-50 font-bold">
+                                    <input type="number" id="areaLength" value="6500"
+                                        class="input-field border-blue-200 bg-blue-50 font-bold">
                                 </div>
                             </div>
                         </div>
@@ -233,8 +330,10 @@
                             <label class="text-xs font-bold text-slate-500">
                                 Rendszer hatásfok: <span id="prVal" class="text-emerald-600 text-base">0.82</span>
                             </label>
-                            <input type="range" id="performanceRatio" min="50" max="100" value="82" class="slider no-print">
-                            <p class="text-[9px] text-slate-400 mt-0.5">Inverter + kábel + hőmérséklet + szennyeződés</p>
+                            <input type="range" id="performanceRatio" min="50" max="100" value="82"
+                                class="slider no-print">
+                            <p class="text-[9px] text-slate-400 mt-0.5">Inverter + kábel + hőmérséklet + szennyeződés
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -246,16 +345,21 @@
                 <!-- Szimulációs kártya -->
                 <div class="card p-3 sm:p-6">
                     <!-- Fejléc: mobilon stack, desktopon egymás mellett -->
-                    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-end mb-3 border-b border-slate-100 pb-2 print:mb-2 print:pb-1 gap-1">
+                    <div
+                        class="flex flex-col sm:flex-row sm:justify-between sm:items-end mb-3 border-b border-slate-100 pb-2 print:mb-2 print:pb-1 gap-1">
                         <div>
-                            <h2 class="text-base sm:text-xl print:text-lg font-bold text-slate-800">Szimulált állapot</h2>
+                            <h2 class="text-base sm:text-xl print:text-lg font-bold text-slate-800">Szimulált állapot
+                            </h2>
                             <p class="text-xs sm:text-sm font-bold text-blue-600" id="currentDateDisplay"></p>
                         </div>
                         <div class="flex sm:flex-col items-center sm:items-end gap-2 sm:gap-0">
-                            <div class="text-2xl sm:text-3xl print:text-xl font-mono font-black text-blue-600" id="timeDisplay">12:00</div>
+                            <div class="text-2xl sm:text-3xl print:text-xl font-mono font-black text-blue-600"
+                                id="timeDisplay">12:00</div>
                             <div class="flex flex-col sm:items-end">
-                                <div class="text-[10px] font-bold text-amber-600" title="Valós Szoláris Idő">SOLAR: <span id="solarTimeDisplay">12:00</span></div>
-                                <div class="text-[10px] font-bold text-slate-400">ALT: <span id="sunAltDisplay">0</span>° AZ: <span id="sunAziDisplay">0</span>°</div>
+                                <div class="text-[10px] font-bold text-amber-600" title="Valós Szoláris Idő">SOLAR:
+                                    <span id="solarTimeDisplay">12:00</span></div>
+                                <div class="text-[10px] font-bold text-slate-400">ALT: <span
+                                        id="sunAltDisplay">0</span>° AZ: <span id="sunAziDisplay">0</span>°</div>
                             </div>
                         </div>
                     </div>
@@ -271,37 +375,53 @@
                     </div>
 
                     <!-- SVG Canvas — alacsonyabb mobilon -->
-                    <div class="w-full h-48 sm:h-80 print:h-56 bg-slate-50 rounded-xl border border-slate-200 relative overflow-hidden">
-                        <svg id="viz" width="100%" height="100%" viewBox="0 0 1000 300" preserveAspectRatio="xMidYMid meet">
-                            <rect x="0" y="220" width="1000" height="80" fill="#f1f5f9"/>
-                            <line x1="0" y1="220" x2="1000" y2="220" stroke="#cbd5e1" stroke-width="2"/>
-                            <rect id="sky" x="0" y="0" width="1000" height="220" fill="#f8fafc"/>
-                            <polygon id="shadowPoly" points="0,0 0,0 0,0" fill="#334155" opacity="0.25"/>
-                            <line id="p1" x1="200" y1="220" x2="300" y2="160" stroke="#1e40af" stroke-width="10" stroke-linecap="round"/>
-                            <line id="p2" x1="600" y1="220" x2="700" y2="160" stroke="#1e40af" stroke-width="10" stroke-linecap="round"/>
+                    <div
+                        class="w-full h-48 sm:h-80 print:h-56 bg-slate-50 rounded-xl border border-slate-200 relative overflow-hidden">
+                        <svg id="viz" width="100%" height="100%" viewBox="0 0 1000 300"
+                            preserveAspectRatio="xMidYMid meet">
+                            <rect x="0" y="220" width="1000" height="80" fill="#f1f5f9" />
+                            <line x1="0" y1="220" x2="1000" y2="220" stroke="#cbd5e1" stroke-width="2" />
+                            <rect id="sky" x="0" y="0" width="1000" height="220" fill="#f8fafc" />
+                            <polygon id="shadowPoly" points="0,0 0,0 0,0" fill="#334155" opacity="0.25" />
+                            <line id="p1" x1="200" y1="220" x2="300" y2="160" stroke="#1e40af" stroke-width="10"
+                                stroke-linecap="round" />
+                            <line id="p2" x1="600" y1="220" x2="700" y2="160" stroke="#1e40af" stroke-width="10"
+                                stroke-linecap="round" />
                             <g id="distLabelGroup">
-                                <line id="distLine" x1="200" y1="260" x2="600" y2="260" stroke="#94a3b8" stroke-width="1" stroke-dasharray="4"/>
-                                <text id="distText" x="400" y="255" text-anchor="middle" font-size="11" font-weight="bold" fill="#64748b">D = 4500 mm</text>
+                                <line id="distLine" x1="200" y1="260" x2="600" y2="260" stroke="#94a3b8"
+                                    stroke-width="1" stroke-dasharray="4" />
+                                <text id="distText" x="400" y="255" text-anchor="middle" font-size="11"
+                                    font-weight="bold" fill="#64748b">D = 4500 mm</text>
                             </g>
-                            <line id="sunRay" x1="0" y1="0" x2="0" y2="0" stroke="#fbbf24" stroke-width="1" stroke-dasharray="10,5"/>
+                            <line id="sunRay" x1="0" y1="0" x2="0" y2="0" stroke="#fbbf24" stroke-width="1"
+                                stroke-dasharray="10,5" />
                             <g id="sunGroup">
-                                <circle cx="0" cy="0" r="15" fill="#fbbf24"/>
+                                <circle cx="0" cy="0" r="15" fill="#fbbf24" />
                                 <circle cx="0" cy="0" r="22" fill="#fbbf24" opacity="0.2">
-                                    <animate attributeName="r" values="20;25;20" dur="3s" repeatCount="indefinite"/>
+                                    <animate attributeName="r" values="20;25;20" dur="3s" repeatCount="indefinite" />
                                 </circle>
                             </g>
                             <g id="areaGroup">
-                                <line id="areaBoundary" x1="0" y1="120" x2="0" y2="260" stroke="#3b82f6" stroke-width="2" stroke-dasharray="5,5"/>
-                                <rect id="overhangHighlight" x="0" y="215" width="0" height="10" fill="#ef4444" opacity="0.5"/>
-                                <text id="areaText" x="0" y="110" text-anchor="middle" font-size="10" font-weight="bold" fill="#3b82f6">Terület vége</text>
+                                <line id="areaBoundary" x1="0" y1="120" x2="0" y2="260" stroke="#3b82f6"
+                                    stroke-width="2" stroke-dasharray="5,5" />
+                                <rect id="overhangHighlight" x="0" y="215" width="0" height="10" fill="#ef4444"
+                                    opacity="0.5" />
+                                <text id="areaText" x="0" y="110" text-anchor="middle" font-size="10" font-weight="bold"
+                                    fill="#3b82f6">Terület vége</text>
                             </g>
-                            <text x="200" y="238" text-anchor="middle" font-size="10" font-weight="bold" fill="#94a3b8">1. SOR</text>
-                            <text id="p2Label" x="600" y="238" text-anchor="middle" font-size="10" font-weight="bold" fill="#94a3b8">2. SOR</text>
+                            <text x="200" y="238" text-anchor="middle" font-size="10" font-weight="bold"
+                                fill="#94a3b8">1. SOR</text>
+                            <text id="p2Label" x="600" y="238" text-anchor="middle" font-size="10" font-weight="bold"
+                                fill="#94a3b8">2. SOR</text>
                         </svg>
-                        <div id="nightOverlay" class="absolute inset-0 bg-slate-900/60 hidden flex items-center justify-center pointer-events-none">
-                            <span class="bg-black/50 text-white px-4 py-1.5 rounded-full text-[11px] font-bold border border-white/20">A NAP A HORIZONT ALATT VAN</span>
+                        <div id="nightOverlay"
+                            class="absolute inset-0 bg-slate-900/60 hidden flex items-center justify-center pointer-events-none">
+                            <span
+                                class="bg-black/50 text-white px-4 py-1.5 rounded-full text-[11px] font-bold border border-white/20">A
+                                NAP A HORIZONT ALATT VAN</span>
                         </div>
-                        <div id="shadowWarning" class="absolute top-2 right-2 sm:top-4 sm:right-4 bg-red-600 text-white px-3 py-1.5 rounded-lg text-[11px] font-bold hidden warning-glow">
+                        <div id="shadowWarning"
+                            class="absolute top-2 right-2 sm:top-4 sm:right-4 bg-red-600 text-white px-3 py-1.5 rounded-lg text-[11px] font-bold hidden warning-glow">
                             ⚠️ ÁRNYÉKOLÁS!
                         </div>
                     </div>
@@ -311,52 +431,78 @@
                 <div class="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4 print:grid-cols-4 print:gap-2">
 
                     <div class="card p-3 sm:p-4 bg-white border-b-4 border-slate-200">
-                        <span class="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase leading-tight block">Téli jav. (Dec&nbsp;21)</span>
+                        <span
+                            class="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase leading-tight block">Téli
+                            jav. (Dec&nbsp;21)</span>
                         <p class="text-lg sm:text-xl font-black text-slate-800 mt-0.5" id="recD">---</p>
                         <p class="text-[9px] sm:text-[10px] text-slate-500">Min. sortávolság</p>
                     </div>
 
                     <div class="card p-3 sm:p-4 bg-white border-b-4 border-slate-200">
-                        <span class="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase leading-tight block">Aktuális árnyék</span>
+                        <span
+                            class="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase leading-tight block">Aktuális
+                            árnyék</span>
                         <p class="text-lg sm:text-xl font-black text-slate-800 mt-0.5" id="currS">---</p>
                         <p class="text-[9px] sm:text-[10px] text-slate-500">É-D vetület</p>
                     </div>
 
                     <div class="card p-3 sm:p-4 bg-white border-b-4 border-slate-200" id="areaCard">
-                        <span class="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase leading-tight block">Helyigény</span>
+                        <span
+                            class="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase leading-tight block">Helyigény</span>
                         <p class="text-lg sm:text-xl font-black text-slate-800 mt-0.5" id="totalSpace">---</p>
                         <p class="text-[9px] sm:text-[10px] font-bold text-slate-500 mt-0.5" id="overhangText">---</p>
                     </div>
 
                     <div class="card p-3 sm:p-4 bg-white border-b-4 border-slate-200" id="statusCard">
-                        <span class="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase leading-tight block">Állapot</span>
+                        <span
+                            class="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase leading-tight block">Állapot</span>
                         <p class="text-lg sm:text-xl font-black text-emerald-600 mt-0.5" id="statusMsg">Biztonságos</p>
                         <p class="text-[9px] sm:text-[10px] text-slate-500" id="statusDesc">Nincs árnyékvetés.</p>
                     </div>
 
                     <!-- Napi Termelés -->
-                    <div class="card p-3 sm:p-4 bg-amber-50 border-b-4 border-amber-400 relative overflow-hidden col-span-2 print:col-span-2">
-                        <span class="text-[9px] sm:text-[10px] font-bold text-amber-700 uppercase">Napi Termelés (2 Sor)</span>
+                    <div
+                        class="card p-3 sm:p-4 bg-amber-50 border-b-4 border-amber-400 relative overflow-hidden col-span-2 print:col-span-2">
+                        <span class="text-[9px] sm:text-[10px] font-bold text-amber-700 uppercase">Napi Termelés (2
+                            Sor)</span>
                         <p class="text-xl sm:text-2xl font-black text-amber-900 mt-0.5" id="totalEnergy">--- kWh</p>
                         <div class="mt-1 text-[10px] font-bold text-amber-800 w-full z-10 relative">
-                            <div class="flex justify-between border-b border-amber-200/50 py-0.5"><span>1. Sor:</span> <span id="p1Energy">---</span></div>
-                            <div class="flex justify-between border-b border-amber-200/50 py-0.5"><span>2. Sor:</span> <span id="p2Energy">---</span></div>
-                            <div class="flex justify-between py-0.5 text-amber-500"><span>Kt:</span> <span id="dailyKt">---</span></div>
+                            <div class="flex justify-between border-b border-amber-200/50 py-0.5"><span>1. Sor:</span>
+                                <span id="p1Energy">---</span></div>
+                            <div class="flex justify-between border-b border-amber-200/50 py-0.5"><span>2. Sor:</span>
+                                <span id="p2Energy">---</span></div>
+                            <div class="flex justify-between py-0.5 text-amber-500"><span>Kt:</span> <span
+                                    id="dailyKt">---</span></div>
                         </div>
-                        <p class="text-[10px] font-bold mt-1 pt-1 border-t border-amber-200/80" id="lossText">Veszteség: 0%</p>
-                        <svg class="absolute -right-3 -bottom-3 w-12 h-12 sm:w-16 sm:h-16 text-amber-200 opacity-30 pointer-events-none" fill="currentColor" viewBox="0 0 20 20"><path d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z"/></svg>
+                        <p class="text-[10px] font-bold mt-1 pt-1 border-t border-amber-200/80" id="lossText">Veszteség:
+                            0%</p>
+                        <svg class="absolute -right-3 -bottom-3 w-12 h-12 sm:w-16 sm:h-16 text-amber-200 opacity-30 pointer-events-none"
+                            fill="currentColor" viewBox="0 0 20 20">
+                            <path
+                                d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" />
+                        </svg>
                     </div>
 
                     <!-- Éves Termelés -->
-                    <div class="card p-3 sm:p-4 bg-indigo-50 border-b-4 border-indigo-400 relative overflow-hidden col-span-2 print:col-span-2">
-                        <span class="text-[9px] sm:text-[10px] font-bold text-indigo-700 uppercase">Éves Termelés — <span id="annualCalcStatus">számolás...</span></span>
-                        <p class="text-xl sm:text-2xl font-black text-indigo-900 mt-0.5" id="annualTotalEnergy">--- kWh</p>
+                    <div
+                        class="card p-3 sm:p-4 bg-indigo-50 border-b-4 border-indigo-400 relative overflow-hidden col-span-2 print:col-span-2">
+                        <span class="text-[9px] sm:text-[10px] font-bold text-indigo-700 uppercase">Éves Termelés —
+                            <span id="annualCalcStatus">számolás...</span></span>
+                        <p class="text-xl sm:text-2xl font-black text-indigo-900 mt-0.5" id="annualTotalEnergy">--- kWh
+                        </p>
                         <div class="mt-1 text-[10px] font-bold text-indigo-800 w-full z-10 relative">
-                            <div class="flex justify-between border-b border-indigo-200/50 py-0.5"><span>1. Sor:</span> <span id="annualP1Energy">---</span></div>
-                            <div class="flex justify-between py-0.5"><span>2. Sor:</span> <span id="annualP2Energy">---</span></div>
+                            <div class="flex justify-between border-b border-indigo-200/50 py-0.5"><span>1. Sor:</span>
+                                <span id="annualP1Energy">---</span></div>
+                            <div class="flex justify-between py-0.5"><span>2. Sor:</span> <span
+                                    id="annualP2Energy">---</span></div>
                         </div>
-                        <p class="text-[10px] font-bold mt-1 pt-1 border-t border-indigo-200/80" id="annualLossText">Veszteség: 0%</p>
-                        <svg class="absolute -right-3 -bottom-3 w-12 h-12 sm:w-16 sm:h-16 text-indigo-200 opacity-30 pointer-events-none" fill="currentColor" viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20a2 2 0 002 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z"/></svg>
+                        <p class="text-[10px] font-bold mt-1 pt-1 border-t border-indigo-200/80" id="annualLossText">
+                            Veszteség: 0%</p>
+                        <svg class="absolute -right-3 -bottom-3 w-12 h-12 sm:w-16 sm:h-16 text-indigo-200 opacity-30 pointer-events-none"
+                            fill="currentColor" viewBox="0 0 24 24">
+                            <path
+                                d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20a2 2 0 002 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z" />
+                        </svg>
                     </div>
                 </div>
             </div>
@@ -386,7 +532,7 @@
         // ========================================================================
         //  ÖSSZECSUKHATÓ SZEKCIÓK (mobil)
         // ========================================================================
-        window.toggleSection = function(id) {
+        window.toggleSection = function (id) {
             const el = document.getElementById(id);
             el.classList.toggle('collapsed');
             const chevron = document.getElementById(id + 'Chevron');
@@ -405,7 +551,7 @@
 
             const B = (dayOfYear - 1) * (360 / 365) * DEG2RAD;
             const EoT = 229.18 * (0.000075 + 0.001868 * Math.cos(B) - 0.032077 * Math.sin(B)
-                                 - 0.014615 * Math.cos(2 * B) - 0.040849 * Math.sin(2 * B));
+                - 0.014615 * Math.cos(2 * B) - 0.040849 * Math.sin(2 * B));
 
             const standardOffset = Math.round(lon / 15);
             const tzOffset = isDST ? standardOffset + 1 : standardOffset;
@@ -422,24 +568,28 @@
             let azimuthDeg = 0;
             if (alphaDeg > 0.5) {
                 const cosGammaS = (sinAlpha * Math.sin(phi) - Math.sin(delta))
-                                / (Math.cos(alphaRad) * Math.cos(phi));
+                    / (Math.cos(alphaRad) * Math.cos(phi));
                 const clampedCos = Math.max(-1, Math.min(1, cosGammaS));
                 azimuthDeg = hourAngle > 0
                     ? Math.acos(clampedCos) * RAD2DEG
                     : -Math.acos(clampedCos) * RAD2DEG;
             }
 
-            let intensityFactor = 0, isShadowed = false, shadowNS = 0;
+            let intensityFactor = 0, shadowFraction = 0, shadowNS = 0;
 
             if (alphaDeg > 0) {
                 const cosAz = Math.cos(azimuthDeg * DEG2RAD);
                 if (cosAz > 0) {
                     shadowNS = H * cosAz / Math.tan(alphaRad);
-                    if ((P + shadowNS) > installedD) isShadowed = true;
+                    if (P > 0) {
+                        shadowFraction = Math.max(0, Math.min(1, (P + shadowNS - installedD) / P));
+                    } else if (shadowNS > installedD) {
+                        shadowFraction = 1;
+                    }
                 }
 
                 const cosTheta = Math.sin(alphaRad) * Math.cos(betaRad)
-                               + Math.cos(alphaRad) * Math.sin(betaRad) * Math.max(0, cosAz);
+                    + Math.cos(alphaRad) * Math.sin(betaRad) * Math.max(0, cosAz);
 
                 if (cosTheta > 0) {
                     const AM = 1 / (Math.sin(alphaRad) + 0.50572 * Math.pow(96.07995 - alphaDeg, -1.6364));
@@ -450,7 +600,7 @@
                 intensityFactor += 0.10 * sinAlpha * skyViewFactor;
             }
 
-            return { alphaDeg, azimuthDeg, intensityFactor, isShadowed, shadowNS, solarMinutes };
+            return { alphaDeg, azimuthDeg, intensityFactor, shadowFraction, shadowNS, solarMinutes };
         }
 
         // ========================================================================
@@ -468,7 +618,14 @@
                 if (step.alphaDeg > 0 && step.intensityFactor > 0) {
                     const power = panelPower * step.intensityFactor * PR * Kt;
                     row1Wh += power * (5 / 60);
-                    row2Wh += (step.isShadowed ? power * 0.15 : power) * (5 / 60);
+                    // Bypass-dióda modell: 3 csoport, részleges árnyékolás
+                    let row2Factor = 1.0;
+                    if (step.shadowFraction > 0) {
+                        if (step.shadowFraction <= 0.33) row2Factor = 0.65;
+                        else if (step.shadowFraction <= 0.66) row2Factor = 0.35;
+                        else row2Factor = 0.15;
+                    }
+                    row2Wh += power * row2Factor * (5 / 60);
                 }
             }
             return { row1Wh, row2Wh };
@@ -601,9 +758,16 @@
                 if (pe) pe.innerText = idealTilt;
             }, 600);
 
-            // Téli javaslat
+            // Téli javaslat — szoláris delet használ a pontosabb eredményért
             const dec21 = new Date(dateVal.getFullYear(), 11, 21);
-            const dec21Step = calculateSunPosition(lat, lon, dec21, 720, betaRad, P, H, installedD, false);
+            const doy21 = Math.floor((dec21 - new Date(dec21.getFullYear(), 0, 0)) / 86400000);
+            const B21 = (doy21 - 1) * (360 / 365) * DEG2RAD;
+            const EoT21 = 229.18 * (0.000075 + 0.001868 * Math.cos(B21) - 0.032077 * Math.sin(B21)
+                - 0.014615 * Math.cos(2 * B21) - 0.040849 * Math.sin(2 * B21));
+            const LSTM21 = 15 * Math.round(lon / 15);
+            const TC21 = 4 * (lon - LSTM21) + EoT21;
+            const solarNoonMin = 720 - TC21;
+            const dec21Step = calculateSunPosition(lat, lon, dec21, solarNoonMin, betaRad, P, H, installedD, false);
             if (dec21Step.alphaDeg > 0) {
                 const recDVal = P + H / Math.tan(dec21Step.alphaDeg * DEG2RAD);
                 document.getElementById('recD').innerText = Math.round(recDVal) + ' mm';
@@ -631,14 +795,14 @@
                 totalSpaceElem.className = "text-lg sm:text-xl font-black text-slate-800 mt-0.5";
             }
 
-            updateUI(current.isShadowed, isDay);
-            updateViz(L, beta, current.alphaDeg, installedD, P, Math.max(0, current.shadowNS), isDay, current.isShadowed, areaL, totalRequired);
+            updateUI(current.shadowFraction, isDay);
+            updateViz(L, beta, current.alphaDeg, installedD, P, Math.max(0, current.shadowNS), isDay, current.shadowFraction, areaL, totalRequired);
         }
 
         // ========================================================================
         //  UI FRISSÍTÉSEK
         // ========================================================================
-        function updateUI(isShadowing, isDay) {
+        function updateUI(shadowFraction, isDay) {
             const statusMsg = document.getElementById('statusMsg');
             const statusDesc = document.getElementById('statusDesc');
             const warning = document.getElementById('shadowWarning');
@@ -652,11 +816,16 @@
                 statusDesc.innerText = "Nincs napsugárzás.";
             } else {
                 night.classList.add('hidden');
-                if (isShadowing) {
+                if (shadowFraction > 0) {
                     warning.classList.remove('hidden');
-                    statusMsg.innerText = "Árnyékolt!";
+                    const pct = Math.round(shadowFraction * 100);
+                    if (shadowFraction >= 0.66) {
+                        statusMsg.innerText = "Erősen árnyékolt!";
+                    } else {
+                        statusMsg.innerText = "Részben árnyékolt";
+                    }
                     statusMsg.className = "text-lg sm:text-xl font-black text-red-600 mt-0.5";
-                    statusDesc.innerText = "2. sor teljesítménye csökken.";
+                    statusDesc.innerText = `2. sor ~${pct}%-ban árnyékolt.`;
                 } else {
                     warning.classList.add('hidden');
                     statusMsg.innerText = "Biztonságos";
@@ -666,7 +835,7 @@
             }
         }
 
-        function updateViz(L, beta, alpha, installedD, P, shadowNS, isDay, isShadowing, areaL, totalRequired) {
+        function updateViz(L, beta, alpha, installedD, P, shadowNS, isDay, shadowFraction, areaL, totalRequired) {
             const scale = 0.08, startX = 200, groundY = 220;
             const betaRad = beta * DEG2RAD, alphaRad = alpha * DEG2RAD;
 
@@ -682,7 +851,7 @@
             const el_p2 = document.getElementById('p2');
             el_p2.setAttribute('x1', p2sx); el_p2.setAttribute('y1', groundY);
             el_p2.setAttribute('x2', p2x2); el_p2.setAttribute('y2', p2y2);
-            el_p2.setAttribute('stroke', isShadowing ? '#ef4444' : '#1e40af');
+            el_p2.setAttribute('stroke', shadowFraction > 0 ? '#ef4444' : '#1e40af');
             document.getElementById('p2Label').setAttribute('x', p2sx);
 
             document.getElementById('distLine').setAttribute('x1', startX);
@@ -725,7 +894,7 @@
                 sunGroup.setAttribute('transform', `translate(${sx},${sy})`);
                 sunGroup.style.display = 'block';
                 const b = Math.min(100, alpha * 2 + 10);
-                sky.setAttribute('fill', `rgb(${220+b/4},${235+b/8},255)`);
+                sky.setAttribute('fill', `rgb(${220 + b / 4},${235 + b / 8},255)`);
             } else {
                 shadow.style.display = 'none';
                 sunRay.style.display = 'none';
@@ -737,7 +906,7 @@
         // ========================================================================
         //  GLOBÁLIS FUNKCIÓK
         // ========================================================================
-        window.geocodeCity = async function() {
+        window.geocodeCity = async function () {
             const city = document.getElementById('cityName').value;
             if (!city) return;
             const btn = document.getElementById('searchCityBtn');
@@ -755,7 +924,7 @@
             btn.innerText = orig;
         };
 
-        window.getLocation = function() {
+        window.getLocation = function () {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(pos => {
                     document.getElementById('latitude').value = pos.coords.latitude.toFixed(4);
@@ -767,7 +936,7 @@
         };
 
         let tiltBtnTimeout;
-        window.setIdealTilt = function() {
+        window.setIdealTilt = function () {
             const de = document.getElementById('idealTiltDisplay');
             if (!de || de.innerText === '--') return;
             document.getElementById('tiltAngle').value = de.innerText;
@@ -788,8 +957,8 @@
         // ========================================================================
         //  INIT
         // ========================================================================
-        ['latitude','longitude','calcDate','panelLength','panelPower','tiltAngle',
-         'installedDist','areaLength','timeSlider','performanceRatio','dstCheckbox'
+        ['latitude', 'longitude', 'calcDate', 'panelLength', 'panelPower', 'tiltAngle',
+            'installedDist', 'areaLength', 'timeSlider', 'performanceRatio', 'dstCheckbox'
         ].forEach(id => {
             const el = document.getElementById(id);
             el.addEventListener('input', calculate);
@@ -799,4 +968,5 @@
         calculate();
     </script>
 </body>
+
 </html>
